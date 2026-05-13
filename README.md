@@ -55,3 +55,13 @@ npm run build
   - `BottomNav.vue` (Props: `active`) — 4 Tabs, der aktive wird über `active`-Prop gesetzt; nicht implementierte Tabs zeigen einen Hinweis.
   - `SearchBar.vue` (`v-model` Support, `placeholder` Prop) — Suchfeld mit Lupen-Icon.
 - `App.vue` ist deutlich schlanker und komponiert die High-Level-Komponenten.
+
+### Iteration 5: Low-Level components
+
+- Wiederverwendbare Low-Level-Komponenten in `src/components/`:
+  - `Avatar.vue` (Props: `initials`) — runder Kreis mit Initialen, scoped Styles.
+  - `StatusBadge.vue` (Props: `status`) — Pillen-Badge mit Varianten `Stationär`/`Ambulant`.
+  - `Button.vue` (Props: `type`, `variant`) — Varianten `primary`/`secondary`, Slot-Inhalt (für die Aktion-Buttons der Detail-View).
+  - `BottomNavItem.vue` (Props: `icon`, `label`, `active`, Emits: `click`) — ersetzt die Inline-Items in `BottomNav.vue`.
+- Visuelle Styles aus `assets/style.css` in die jeweiligen Komponenten verschoben (scoped). In der globalen CSS bleiben nur noch Layout-Regeln (Grid-Placement etc.).
+- `PatientCard.vue` und `BottomNav.vue` nutzen jetzt die neuen Low-Level-Komponenten.

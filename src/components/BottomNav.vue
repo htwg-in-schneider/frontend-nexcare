@@ -1,4 +1,6 @@
 <script setup>
+import BottomNavItem from './BottomNavItem.vue';
+
 defineProps({
   active: {
     type: String,
@@ -14,22 +16,10 @@ function notImplemented(label) {
 <template>
   <nav class="bottom-nav" aria-label="Hauptnavigation">
     <div class="nav-inner">
-      <a href="#" class="nav-item" :class="{ active: active === 'home' }" @click.prevent="notImplemented('Home')">
-        <i class="bi bi-house"></i>
-        <span>Home</span>
-      </a>
-      <a href="#" class="nav-item" :class="{ active: active === 'patienten' }" @click.prevent>
-        <i class="bi bi-person-fill"></i>
-        <span>Patienten</span>
-      </a>
-      <a href="#" class="nav-item" :class="{ active: active === 'betten' }" @click.prevent="notImplemented('Betten')">
-        <i class="bi bi-square"></i>
-        <span>Betten</span>
-      </a>
-      <a href="#" class="nav-item" :class="{ active: active === 'account' }" @click.prevent="notImplemented('Account')">
-        <i class="bi bi-person"></i>
-        <span>Account</span>
-      </a>
+      <BottomNavItem icon="bi-house"        label="Home"      :active="active === 'home'"      @click="notImplemented('Home')" />
+      <BottomNavItem icon="bi-person-fill"  label="Patienten" :active="active === 'patienten'" />
+      <BottomNavItem icon="bi-square"       label="Betten"    :active="active === 'betten'"    @click="notImplemented('Betten')" />
+      <BottomNavItem icon="bi-person"       label="Account"   :active="active === 'account'"   @click="notImplemented('Account')" />
     </div>
   </nav>
 </template>

@@ -1,41 +1,51 @@
-// Iteration 8a: dummy REST source. Replace base URL with our own backend in Iteration 8b.
-const BASE_URL = 'https://dummyjson.com';
+// Iteration 8b: real REST backend (nexcare-backend, Spring Boot on :8081)
+const BASE_URL = 'http://localhost:8081';
 
-function mapUserToPatient(user) {
+function mapStatus(status) {
+  if (status === 'STATIONAER') return 'Stationär';
+  if (status === 'AMBULANT') return 'Ambulant';
+  return status ?? '';
+}
+
+function formatGeburtsdatum(iso) {
+  if (!iso) return '–';
+  // backend liefert "1985-03-15"
+  const [y, m, d] = iso.split('-');
+  return `${d}.${m}.${y}`;
+}
+
+function mapPatient(p) {
   return {
-    id: user.id,
-    vorname: user.firstName,
-    nachname: user.lastName,
-    versicherungsnr: `V-2024-${String(user.id).padStart(3, '0')}`,
-    klinikum: 'Klinikum Konstanz',
-    status: user.id % 2 === 0 ? 'Ambulant' : 'Stationär',
-    geburtsdatum: user.birthDate
-      ? new Date(user.birthDate).toLocaleDateString('de-DE')
-      : '–',
-    telefon: user.phone ?? '–',
-    email: user.email ?? '–',
-    adresse: user.address
-      ? `${user.address.address}, ${user.address.postalCode ?? ''} ${user.address.city ?? ''}`.trim()
-      : '–',
-    etage: '–',
-    abteilung: '–',
-    station: '–',
-    zimmer: '–',
-    bett: '–',
-    notfallkontakt: { name: '–', beziehung: '–', telefon: '–' },
+    id: p.id,
+    vorname: p.vorname,
+    nachname: p.nachname,
+    versicherungsnr: p.versicherungsnr,
+    klinikum: p.klinikum?.name ?? '–',
+    klinikumId: p.klinikum?.id ?? null,
+    status: mapStatus(p.status),
+    geburtsdatum: formatGeburtsdatum(p.geburtsdatum),
+    telefon: p.telefon ?? '–',
+    email: p.email ?? '–',
+    adresse: p.adresse ?? '–',
+    etage: p.etage ?? '–',
+    abteilung: p.abteilung ?? '–',
+    station: p.station ?? '–',
+    zimmer: p.zimmer ?? '–',
+    bett: p.bett ?? '–',
+    notfallkontakt: p.notfallkontakt ?? { name: '–', beziehung: '–', telefon: '–' },
   };
 }
 
 export async function fetchPatients() {
-  const res = await fetch(`${BASE_URL}/users?limit=10`);
+  const res = await fetch(`${BASE_URL}/api/patient`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
   const data = await res.json();
-  return (data.users ?? []).map(mapUserToPatient);
+  return data.map(mapPatient);
 }
 
 export async function fetchPatient(id) {
-  const res = await fetch(`${BASE_URL}/users/${id}`);
+  const res = await fetch(`${BASE_URL}/api/patient/${id}`);
   if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const user = await res.json();
-  return mapUserToPatient(user);
+  const data = await res.json();
+  return mapPatient(data);
 }

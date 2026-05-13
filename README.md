@@ -91,3 +91,13 @@ npm run build
 - `views/PatientList.vue`: lädt Patienten in `onMounted` per `fetchPatients()`, zeigt Loading/Error/Empty-States.
 - `views/PatientDetail.vue`: lädt einen Patient per `fetchPatient(id)` in `onMounted` und bei Wechsel der `id`-Prop (via `watch`).
 - `src/data.js` ist nicht mehr nötig und wurde entfernt.
+
+### Iteration 8b: Dynamic patient loading via REST backend (real data)
+
+- `src/api/patients.js`: `BASE_URL` zeigt jetzt auf `http://localhost:8081` (nexcare-backend); Endpoints sind `/api/patient` und `/api/patient/{id}`.
+- Mapping-Helper `mapPatient(p)` adaptiert das Backend-JSON an die im Frontend bisher verwendete Form:
+  - `klinikum.name` → flacher `klinikum`-String (zusätzlich `klinikumId` für spätere Filter).
+  - `status` `"STATIONAER"`/`"AMBULANT"` → `"Stationär"`/`"Ambulant"`.
+  - `geburtsdatum` ISO `"1985-03-15"` → `"15.03.1985"`.
+- `PatientList.vue` und `PatientDetail.vue` bleiben unverändert — alle Anpassungen liegen im API-Layer.
+- Voraussetzung: Backend muss auf `:8081` laufen.

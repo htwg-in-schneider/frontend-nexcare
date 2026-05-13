@@ -39,3 +39,10 @@ npm run build
 - `.github/workflows/build-and-deploy.yml` deployt die gebaute Vue-App auf GitHub Pages bei jedem Push auf `main` oder `Aufgabe04`.
 - `vite.config.js` setzt `base` auf den Repo-Pfad (`/frontend-nexcare/`) im Production-Build, damit Assets korrekt aufgelöst werden.
 - Hinweis: Damit das Deployment durchläuft, muss das Repository öffentlich sein und unter Settings → Pages → Source „GitHub Actions" aktiviert werden.
+
+### Iteration 3: Dynamic patient loading from local data
+
+- Lokale `src/data.js` mit Array von 5 Beispielpatienten (inkl. aller Detailfelder für spätere Iterationen).
+- `App.vue` rendert die Patientenliste jetzt dynamisch mit `v-for`.
+- Klick auf eine Patient-Card löst aktuell einen `alert()` mit Name/Versicherungsnr. aus (Detail-View kommt in Iteration 6).
+- Initialen, Statusklasse und Anzeigewerte werden in `<script setup>` aus dem Patientenobjekt abgeleitet.

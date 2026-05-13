@@ -1,4 +1,22 @@
-<script setup></script>
+<script setup>
+import { patients } from './data.js';
+
+function getPatients() {
+  return patients;
+}
+
+function getInitials(patient) {
+  return (patient.vorname.charAt(0) + patient.nachname.charAt(0)).toUpperCase();
+}
+
+function statusClass(status) {
+  return status === 'Stationär' ? 'status-stationaer' : 'status-ambulant';
+}
+
+function showDetails(patient) {
+  alert(`${patient.vorname} ${patient.nachname} (${patient.versicherungsnr})`);
+}
+</script>
 
 <template>
   <header class="app-header">
@@ -10,60 +28,25 @@
     </div>
   </header>
 
-  <main class="container px-3">
+  <main class="container">
     <div class="search-wrapper">
       <i class="bi bi-search"></i>
       <input type="text" class="search-input" placeholder="Patient suchen..." />
     </div>
 
     <ul class="patient-list">
-      <li class="patient-card">
-        <div class="avatar">MS</div>
+      <li
+        v-for="patient in getPatients()"
+        :key="patient.id"
+        class="patient-card"
+        @click="showDetails(patient)"
+      >
+        <div class="avatar">{{ getInitials(patient) }}</div>
         <div class="patient-info">
-          <div class="patient-name">Maria Schmidt</div>
-          <div class="patient-meta">V-2024-001 · Klinikum Konstanz</div>
+          <div class="patient-name">{{ patient.vorname }} {{ patient.nachname }}</div>
+          <div class="patient-meta">{{ patient.versicherungsnr }} · {{ patient.klinikum }}</div>
         </div>
-        <span class="status-badge status-stationaer">Stationär</span>
-        <i class="bi bi-chevron-right chevron"></i>
-      </li>
-
-      <li class="patient-card">
-        <div class="avatar">TW</div>
-        <div class="patient-info">
-          <div class="patient-name">Thomas Weber</div>
-          <div class="patient-meta">V-2024-002 · Klinikum Konstanz</div>
-        </div>
-        <span class="status-badge status-stationaer">Stationär</span>
-        <i class="bi bi-chevron-right chevron"></i>
-      </li>
-
-      <li class="patient-card">
-        <div class="avatar">AH</div>
-        <div class="patient-info">
-          <div class="patient-name">Anna Hoffmann</div>
-          <div class="patient-meta">V-2024-003 · Klinikum Konstanz</div>
-        </div>
-        <span class="status-badge status-ambulant">Ambulant</span>
-        <i class="bi bi-chevron-right chevron"></i>
-      </li>
-
-      <li class="patient-card">
-        <div class="avatar">PB</div>
-        <div class="patient-info">
-          <div class="patient-name">Peter Braun</div>
-          <div class="patient-meta">V-2024-004 · Klinikum Konstanz</div>
-        </div>
-        <span class="status-badge status-stationaer">Stationär</span>
-        <i class="bi bi-chevron-right chevron"></i>
-      </li>
-
-      <li class="patient-card">
-        <div class="avatar">LK</div>
-        <div class="patient-info">
-          <div class="patient-name">Lisa Krause</div>
-          <div class="patient-meta">V-2024-005 · Klinikum Konstanz</div>
-        </div>
-        <span class="status-badge status-ambulant">Ambulant</span>
+        <span class="status-badge" :class="statusClass(patient.status)">{{ patient.status }}</span>
         <i class="bi bi-chevron-right chevron"></i>
       </li>
     </ul>

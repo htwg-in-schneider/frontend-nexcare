@@ -1,14 +1,10 @@
 # frontend-nexcare
 
-Frontend for the Nexcare patient management application (Vue 3 + Vite).
+Frontend für die Patientenverwaltung (Vue 3 + Vite).
 
 ## Recommended IDE Setup
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (Vetur deaktivieren).
 
 ## Project Setup
 
@@ -27,3 +23,12 @@ npm run dev
 ```sh
 npm run build
 ```
+
+## Iterations
+
+### Iteration 1: Static content
+
+- Statisches Mockup der Patientenliste (`patientenviewAlle.png`) als Vue/HTML eingebunden.
+- Bootstrap 5 + Bootstrap Icons + Inter-Font via CDN in `index.html`.
+- Custom CSS in `src/assets/style.css` für die mockup-nahe Optik (Cards, Avatar-Initialen, Status-Badges, Bottom-Nav, FAB).
+- `App.vue` enthält Header, Suchfeld, Patient-Liste (5 Beispielpatienten), FAB und Bottom-Nav.

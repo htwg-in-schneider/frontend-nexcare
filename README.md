@@ -65,3 +65,14 @@ npm run build
   - `BottomNavItem.vue` (Props: `icon`, `label`, `active`, Emits: `click`) — ersetzt die Inline-Items in `BottomNav.vue`.
 - Visuelle Styles aus `assets/style.css` in die jeweiligen Komponenten verschoben (scoped). In der globalen CSS bleiben nur noch Layout-Regeln (Grid-Placement etc.).
 - `PatientCard.vue` und `BottomNav.vue` nutzen jetzt die neuen Low-Level-Komponenten.
+
+### Iteration 6: Added Vue-Router and patient detail view
+
+- Vue-Router installiert (`npm install vue-router`), in `main.js` registriert.
+- `src/router/index.js` mit `createWebHistory(import.meta.env.BASE_URL)` und zwei Routen:
+  - `/` → `views/PatientList.vue`
+  - `/patient/view/:id` → `views/PatientDetail.vue` (id wird per `props` als `Number` übergeben)
+- `App.vue` ist jetzt minimal: `<router-view />` plus globale `BottomNav`.
+- `views/PatientList.vue` enthält die Listen-Logik (vorher in `App.vue`), inkl. Header, SearchBar, Patient-Liste, FAB.
+- `views/PatientDetail.vue` rendert das Mockup `patientenAnsicht.png`: Hero-Bereich (großer Avatar + Name + Status), Sektionen „Persönliche Daten", „Aktueller Aufenthalt", „Notfallkontakt" als Definition-List, Aktion-Buttons „Medikamentenplan" und „Patient entlassen". Bei unbekannter id wird ein Fallback-Text angezeigt.
+- `PatientCard`-Klick navigiert über `router.push({ name: 'patient-detail', params: { id } })`.

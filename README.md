@@ -121,6 +121,13 @@ npm run build
 - `api/klinika.js` (neu) — `fetchKlinika()`.
 - `PatientList.vue` ruft den Backend-Filter mit 250 ms Debounce auf, sobald sich einer der drei Filter ändert (Such-Tippen führt nicht mehr zu einem Call pro Tastendruck). Lokales Client-Filtering wurde entfernt — das Backend filtert jetzt.
 
+### Iteration 11: Klinikum entity wired into the form
+
+- `PatientForm.vue` lädt jetzt beim Mount die Klinika aus `/api/klinikum` (via `fetchKlinika()` aus `src/api/klinika.js`).
+- Das bisherige Number-Input „Klinikum-ID" ist ersetzt durch ein `<select>`-Dropdown mit allen Klinika (Anzeige: `klinikum.name`, Wert: `klinikum.id`).
+- `mapToBackend(p)` aus `api/patients.js` setzt `klinikum: { id: Number(klinikumId) }` für POST/PUT — Backend speichert die Referenz, und `mapPatient(p)` macht beim Laden wieder einen flachen String draus.
+- Damit ist die 1:n-Beziehung Klinikum ↔ Patienten auch im Create/Edit-Formular sauber umgesetzt.
+
 ### Iteration 9 (fix): Custom Toast + Confirm-Dialog
 
 - Browser-eigene `alert()`/`confirm()` ersetzt durch eigene UI-Komponenten:

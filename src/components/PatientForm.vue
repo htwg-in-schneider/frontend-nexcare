@@ -1,10 +1,23 @@
 <script setup>
+import { ref, onMounted } from 'vue';
+import { fetchKlinika } from '@/api/klinika.js';
+
 defineProps({
   modelValue: { type: Object, required: true },
   submitLabel: { type: String, default: 'Speichern' },
 });
 
 defineEmits(['update:modelValue', 'submit']);
+
+const klinika = ref([]);
+
+onMounted(async () => {
+  try {
+    klinika.value = await fetchKlinika();
+  } catch {
+    klinika.value = [];
+  }
+});
 </script>
 
 <template>
@@ -62,9 +75,12 @@ defineEmits(['update:modelValue', 'submit']);
           </select>
         </label>
         <label>
-          <span>Klinikum-ID</span>
-          <input type="number" min="1" :value="modelValue.klinikumId ?? ''"
-            @input="$emit('update:modelValue', { ...modelValue, klinikumId: $event.target.value ? Number($event.target.value) : null })" />
+          <span>Klinikum</span>
+          <select :value="modelValue.klinikumId ?? ''"
+            @change="$emit('update:modelValue', { ...modelValue, klinikumId: $event.target.value ? Number($event.target.value) : null })">
+            <option value="">– bitte wählen –</option>
+            <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
+          </select>
         </label>
         <label>
           <span>Etage</span>

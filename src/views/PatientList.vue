@@ -1,8 +1,8 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
-import { patients } from '@/data.js';
+import { fetchPatients } from '@/api/patients.js';
 import { useFilterStore } from '@/stores/filter.js';
 import AppHeader from '@/components/AppHeader.vue';
 import SearchBar from '@/components/SearchBar.vue';
@@ -12,10 +12,29 @@ const router = useRouter();
 const filterStore = useFilterStore();
 const { searchQuery } = storeToRefs(filterStore);
 
+const patients = ref([]);
+const loading = ref(false);
+const error = ref(null);
+
+async function loadPatients() {
+  loading.value = true;
+  error.value = null;
+  try {
+    patients.value = await fetchPatients();
+  } catch (err) {
+    error.value = err.message ?? 'Unbekannter Fehler beim Laden.';
+    patients.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(loadPatients);
+
 const filteredPatients = computed(() => {
   const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return patients;
-  return patients.filter((p) => {
+  if (!q) return patients.value;
+  return patients.value.filter((p) => {
     const fullName = `${p.vorname} ${p.nachname}`.toLowerCase();
     return (
       fullName.includes(q) ||
@@ -40,7 +59,11 @@ function addPatient() {
   <main class="container">
     <SearchBar v-model="searchQuery" placeholder="Patient suchen..." />
 
-    <ul v-if="filteredPatients.length" class="patient-list">
+    <p v-if="loading" class="state-message">Lade Patienten …</p>
+    <p v-else-if="error" class="state-message error">
+      Patienten konnten nicht geladen werden: {{ error }}
+    </p>
+    <ul v-else-if="filteredPatients.length" class="patient-list">
       <PatientCard
         v-for="patient in filteredPatients"
         :key="patient.id"
@@ -48,7 +71,7 @@ function addPatient() {
         @click="openDetail"
       />
     </ul>
-    <p v-else class="empty-state">Keine Patienten gefunden.</p>
+    <p v-else class="state-message">Keine Patienten gefunden.</p>
   </main>
 
   <button class="fab" aria-label="Patient hinzufügen" @click="addPatient">
@@ -57,9 +80,12 @@ function addPatient() {
 </template>
 
 <style scoped>
-.empty-state {
+.state-message {
   text-align: center;
   color: var(--color-muted);
   margin-top: 2rem;
+}
+.state-message.error {
+  color: #b3372e;
 }
 </style>

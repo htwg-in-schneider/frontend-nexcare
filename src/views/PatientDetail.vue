@@ -1,7 +1,7 @@
 <script setup>
-import { computed } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { patients } from '@/data.js';
+import { fetchPatient } from '@/api/patients.js';
 import AppHeader from '@/components/AppHeader.vue';
 import Avatar from '@/components/Avatar.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
@@ -12,7 +12,25 @@ const props = defineProps({
 });
 
 const router = useRouter();
-const patient = computed(() => patients.find((p) => p.id === props.id));
+const patient = ref(null);
+const loading = ref(false);
+const error = ref(null);
+
+async function loadPatient(id) {
+  loading.value = true;
+  error.value = null;
+  patient.value = null;
+  try {
+    patient.value = await fetchPatient(id);
+  } catch (err) {
+    error.value = err.message ?? 'Patient konnte nicht geladen werden.';
+  } finally {
+    loading.value = false;
+  }
+}
+
+onMounted(() => loadPatient(props.id));
+watch(() => props.id, (newId) => loadPatient(newId));
 
 function getInitials(p) {
   return (p.vorname.charAt(0) + p.nachname.charAt(0)).toUpperCase();
@@ -34,49 +52,54 @@ function dischargePatient() {
 <template>
   <AppHeader title="Patientendetail" @back="goBack" />
 
-  <main v-if="patient" class="container detail-container">
-    <section class="patient-hero">
-      <Avatar :initials="getInitials(patient)" class="hero-avatar" />
-      <div class="hero-info">
-        <h2 class="hero-name">{{ patient.vorname }} {{ patient.nachname }}</h2>
-        <StatusBadge :status="patient.status" />
+  <main class="container detail-container">
+    <p v-if="loading" class="state-message">Lade Patient …</p>
+    <p v-else-if="error" class="state-message error">
+      Patient konnte nicht geladen werden: {{ error }}
+    </p>
+
+    <template v-else-if="patient">
+      <section class="patient-hero">
+        <Avatar :initials="getInitials(patient)" class="hero-avatar" />
+        <div class="hero-info">
+          <h2 class="hero-name">{{ patient.vorname }} {{ patient.nachname }}</h2>
+          <StatusBadge :status="patient.status" />
+        </div>
+      </section>
+
+      <h3 class="section-title">Persönliche Daten</h3>
+      <dl class="info-card">
+        <div class="info-row"><dt>Geburtsdatum</dt><dd>{{ patient.geburtsdatum }}</dd></div>
+        <div class="info-row"><dt>Versicherungsnr.</dt><dd>{{ patient.versicherungsnr }}</dd></div>
+        <div class="info-row"><dt>Telefon</dt><dd>{{ patient.telefon }}</dd></div>
+        <div class="info-row"><dt>E-Mail</dt><dd>{{ patient.email }}</dd></div>
+        <div class="info-row"><dt>Adresse</dt><dd>{{ patient.adresse }}</dd></div>
+      </dl>
+
+      <h3 class="section-title">Aktueller Aufenthalt</h3>
+      <dl class="info-card">
+        <div class="info-row"><dt>Krankenhaus</dt><dd>{{ patient.klinikum }}</dd></div>
+        <div class="info-row"><dt>Etage</dt><dd>{{ patient.etage }}</dd></div>
+        <div class="info-row"><dt>Abteilung</dt><dd>{{ patient.abteilung }}</dd></div>
+        <div class="info-row"><dt>Station</dt><dd>{{ patient.station }}</dd></div>
+        <div class="info-row"><dt>Zimmer</dt><dd>{{ patient.zimmer }}</dd></div>
+        <div class="info-row"><dt>Bett</dt><dd>{{ patient.bett }}</dd></div>
+      </dl>
+
+      <h3 class="section-title">Notfallkontakt</h3>
+      <dl class="info-card">
+        <div class="info-row"><dt>Name</dt><dd>{{ patient.notfallkontakt.name }}</dd></div>
+        <div class="info-row"><dt>Beziehung</dt><dd>{{ patient.notfallkontakt.beziehung }}</dd></div>
+        <div class="info-row"><dt>Telefon</dt><dd>{{ patient.notfallkontakt.telefon }}</dd></div>
+      </dl>
+
+      <div class="action-buttons">
+        <Button variant="primary" @click="showMedikamentenplan">Medikamentenplan</Button>
+        <Button variant="primary" @click="dischargePatient">Patient entlassen</Button>
       </div>
-    </section>
+    </template>
 
-    <h3 class="section-title">Persönliche Daten</h3>
-    <dl class="info-card">
-      <div class="info-row"><dt>Geburtsdatum</dt><dd>{{ patient.geburtsdatum }}</dd></div>
-      <div class="info-row"><dt>Versicherungsnr.</dt><dd>{{ patient.versicherungsnr }}</dd></div>
-      <div class="info-row"><dt>Telefon</dt><dd>{{ patient.telefon }}</dd></div>
-      <div class="info-row"><dt>E-Mail</dt><dd>{{ patient.email }}</dd></div>
-      <div class="info-row"><dt>Adresse</dt><dd>{{ patient.adresse }}</dd></div>
-    </dl>
-
-    <h3 class="section-title">Aktueller Aufenthalt</h3>
-    <dl class="info-card">
-      <div class="info-row"><dt>Krankenhaus</dt><dd>{{ patient.klinikum }}</dd></div>
-      <div class="info-row"><dt>Etage</dt><dd>{{ patient.etage }}</dd></div>
-      <div class="info-row"><dt>Abteilung</dt><dd>{{ patient.abteilung }}</dd></div>
-      <div class="info-row"><dt>Station</dt><dd>{{ patient.station }}</dd></div>
-      <div class="info-row"><dt>Zimmer</dt><dd>{{ patient.zimmer }}</dd></div>
-      <div class="info-row"><dt>Bett</dt><dd>{{ patient.bett }}</dd></div>
-    </dl>
-
-    <h3 class="section-title">Notfallkontakt</h3>
-    <dl class="info-card">
-      <div class="info-row"><dt>Name</dt><dd>{{ patient.notfallkontakt.name }}</dd></div>
-      <div class="info-row"><dt>Beziehung</dt><dd>{{ patient.notfallkontakt.beziehung }}</dd></div>
-      <div class="info-row"><dt>Telefon</dt><dd>{{ patient.notfallkontakt.telefon }}</dd></div>
-    </dl>
-
-    <div class="action-buttons">
-      <Button variant="primary" @click="showMedikamentenplan">Medikamentenplan</Button>
-      <Button variant="primary" @click="dischargePatient">Patient entlassen</Button>
-    </div>
-  </main>
-
-  <main v-else class="container detail-container">
-    <p class="not-found">Patient nicht gefunden.</p>
+    <p v-else class="state-message">Patient nicht gefunden.</p>
   </main>
 </template>
 
@@ -156,11 +179,12 @@ function dischargePatient() {
   margin-top: 1.25rem;
 }
 
-.not-found {
+.state-message {
   text-align: center;
   color: var(--color-muted);
-  margin-top: 3rem;
+  margin-top: 2rem;
 }
+.state-message.error { color: #b3372e; }
 
 @media (max-width: 23.74em) {
   .info-row {

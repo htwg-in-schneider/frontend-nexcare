@@ -84,3 +84,10 @@ npm run build
 - `PatientList.vue` nutzt den Store statt eines lokalen Refs: Suchstring überlebt jetzt Navigationen (Liste → Detail → Zurück), und ist bereit für die in Iteration 10 kommende Server-side-Suche.
 - `searchQuery` wird über `storeToRefs(filterStore)` an `SearchBar`s `v-model` gebunden.
 - Lokales Client-Filtering der Patientenliste nach Name/Versicherungsnr/Klinikum (vor dem REST-Wechsel in Iter 8b).
+
+### Iteration 8a: Dynamic patient loading via REST (dummy data)
+
+- `src/api/patients.js`: zentraler Ort für REST-Aufrufe, mit `fetchPatients()` und `fetchPatient(id)`. Aktuell zeigt `BASE_URL` auf `https://dummyjson.com` — die Felder werden über `mapUserToPatient(...)` auf das Patient-Modell gemappt (V-Nr aus id, Klinikum hardcoded, Status alternierend, fehlende Felder als `–`).
+- `views/PatientList.vue`: lädt Patienten in `onMounted` per `fetchPatients()`, zeigt Loading/Error/Empty-States.
+- `views/PatientDetail.vue`: lädt einen Patient per `fetchPatient(id)` in `onMounted` und bei Wechsel der `id`-Prop (via `watch`).
+- `src/data.js` ist nicht mehr nötig und wurde entfernt.

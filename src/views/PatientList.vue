@@ -49,7 +49,7 @@ function openDetail(patient) {
 }
 
 function addPatient() {
-  alert('Patient anlegen ist noch nicht implementiert (kommt in Iteration 9).');
+  router.push({ name: 'patient-create' });
 }
 </script>
 

@@ -1,5 +1,6 @@
 <script setup>
 import BottomNavItem from './BottomNavItem.vue';
+import { useUiStore } from '@/stores/ui.js';
 
 defineProps({
   active: {
@@ -8,8 +9,10 @@ defineProps({
   },
 });
 
+const ui = useUiStore();
+
 function notImplemented(label) {
-  alert(`${label} ist noch nicht implementiert.`);
+  ui.showToast(`${label} ist noch nicht implementiert.`, { variant: 'info' });
 }
 </script>
 

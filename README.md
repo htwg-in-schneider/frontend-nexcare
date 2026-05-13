@@ -95,9 +95,26 @@ npm run build
 ### Iteration 8b: Dynamic patient loading via REST backend (real data)
 
 - `src/api/patients.js`: `BASE_URL` zeigt jetzt auf `http://localhost:8081` (nexcare-backend); Endpoints sind `/api/patient` und `/api/patient/{id}`.
-- Mapping-Helper `mapPatient(p)` adaptiert das Backend-JSON an die im Frontend bisher verwendete Form:
-  - `klinikum.name` → flacher `klinikum`-String (zusätzlich `klinikumId` für spätere Filter).
-  - `status` `"STATIONAER"`/`"AMBULANT"` → `"Stationär"`/`"Ambulant"`.
-  - `geburtsdatum` ISO `"1985-03-15"` → `"15.03.1985"`.
-- `PatientList.vue` und `PatientDetail.vue` bleiben unverändert — alle Anpassungen liegen im API-Layer.
+- Mapping-Helper `mapPatient(p)` adaptiert das Backend-JSON an die im Frontend verwendete Form: `klinikum.name` → flacher `klinikum`-String (zusätzlich `klinikumId`), `status` `"STATIONAER"`/`"AMBULANT"` → `"Stationär"`/`"Ambulant"`, `geburtsdatum` bleibt als ISO im Datenmodell und wird nur in der Anzeige formatiert.
+- `PatientList.vue` und `PatientDetail.vue` bleiben strukturell unverändert — alle Anpassungen liegen im API-Layer.
 - Voraussetzung: Backend muss auf `:8081` laufen.
+
+### Iteration 9: Complete CRUD of patients via REST
+
+- Neue Komponente `components/PatientForm.vue` (geteilte Form für Create + Edit, `v-model` auf Patient-Objekt, Slot `#actions` für Buttons).
+- Neue Views:
+  - `views/CreatePatient.vue` (POST `/api/patient`, navigiert nach Erfolg zurück zur Liste).
+  - `views/EditPatient.vue` (lädt vorhandenen Patient per `fetchPatient`, PUT `/api/patient/{id}`, plus „Patient entlassen (löschen)"-Button mit `confirm` und DELETE).
+- Routen: `/patient/create` und `/patient/edit/:id`.
+- Listen-FAB navigiert jetzt zu `patient-create`. PatientDetail-Hero hat einen Stift-Button für „Bearbeiten" (→ `patient-edit`), „Patient entlassen" macht DELETE und navigiert zur Liste.
+- API erweitert um `createPatient`, `updatePatient`, `deletePatient` (inkl. Reverse-Mapping `mapToBackend(p)` für Status/Klinikum).
+- Klinikum wird vorläufig per ID-Eingabefeld referenziert; in Iteration 11 wird daraus ein Dropdown mit den Klinika aus `/api/klinikum`.
+
+### Iteration 9 (fix): Custom Toast + Confirm-Dialog
+
+- Browser-eigene `alert()`/`confirm()` ersetzt durch eigene UI-Komponenten:
+  - `components/Toast.vue` — Pop-up mittig oben (1/4 vom oberen Rand), verschwindet automatisch nach 3 Sekunden, Varianten `success`/`error`/`info` mit passendem Icon und farbigem Border.
+  - `components/ConfirmDialog.vue` — Modaler Dialog mit Overlay, Titel, Nachricht, „Abbrechen"/„Bestätigen"-Buttons; gibt ein Promise zurück.
+- `stores/ui.js`: zentraler Pinia-Store mit `showToast(message, opts)` und `confirm({ title, message, confirmLabel, cancelLabel })`-Action (Promise-basiert).
+- `App.vue` mountet `<Toast />` und `<ConfirmDialog />` global.
+- Alle bisherigen `alert(...)` und `confirm(...)` in den Views/Komponenten umgestellt.

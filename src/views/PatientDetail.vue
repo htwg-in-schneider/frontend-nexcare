@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, watch } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
-import { fetchPatient } from '@/api/patients.js';
+import { fetchPatient, deletePatient } from '@/api/patients.js';
+import { useUiStore } from '@/stores/ui.js';
 import AppHeader from '@/components/AppHeader.vue';
 import Avatar from '@/components/Avatar.vue';
 import StatusBadge from '@/components/StatusBadge.vue';
@@ -12,6 +13,7 @@ const props = defineProps({
 });
 
 const router = useRouter();
+const ui = useUiStore();
 const patient = ref(null);
 const loading = ref(false);
 const error = ref(null);
@@ -36,16 +38,40 @@ function getInitials(p) {
   return (p.vorname.charAt(0) + p.nachname.charAt(0)).toUpperCase();
 }
 
+const geburtsdatumDe = computed(() => {
+  const iso = patient.value?.geburtsdatum;
+  if (!iso) return '–';
+  const [y, m, d] = iso.split('-');
+  return `${d}.${m}.${y}`;
+});
+
 function goBack() {
   router.push({ name: 'patient-list' });
 }
 
-function showMedikamentenplan() {
-  alert('Medikamentenplan ist noch nicht implementiert.');
+function editPatient() {
+  router.push({ name: 'patient-edit', params: { id: props.id } });
 }
 
-function dischargePatient() {
-  alert('Patient entlassen ist noch nicht implementiert (kommt in Iteration 9).');
+function showMedikamentenplan() {
+  ui.showToast('Medikamentenplan ist noch nicht implementiert.', { variant: 'info' });
+}
+
+async function dischargePatient() {
+  const ok = await ui.confirm({
+    title: 'Patient entlassen',
+    message: `Patient ${patient.value.vorname} ${patient.value.nachname} wirklich entlassen?`,
+    confirmLabel: 'Entlassen',
+    cancelLabel: 'Abbrechen',
+  });
+  if (!ok) return;
+  try {
+    await deletePatient(props.id);
+    ui.showToast('Patient wurde entlassen.');
+    router.push({ name: 'patient-list' });
+  } catch (err) {
+    ui.showToast(`Fehler beim Entlassen: ${err.message ?? err}`, { variant: 'error' });
+  }
 }
 </script>
 
@@ -65,11 +91,14 @@ function dischargePatient() {
           <h2 class="hero-name">{{ patient.vorname }} {{ patient.nachname }}</h2>
           <StatusBadge :status="patient.status" />
         </div>
+        <button class="edit-btn" aria-label="Bearbeiten" @click="editPatient">
+          <i class="bi bi-pencil"></i>
+        </button>
       </section>
 
       <h3 class="section-title">Persönliche Daten</h3>
       <dl class="info-card">
-        <div class="info-row"><dt>Geburtsdatum</dt><dd>{{ patient.geburtsdatum }}</dd></div>
+        <div class="info-row"><dt>Geburtsdatum</dt><dd>{{ geburtsdatumDe }}</dd></div>
         <div class="info-row"><dt>Versicherungsnr.</dt><dd>{{ patient.versicherungsnr }}</dd></div>
         <div class="info-row"><dt>Telefon</dt><dd>{{ patient.telefon }}</dd></div>
         <div class="info-row"><dt>E-Mail</dt><dd>{{ patient.email }}</dd></div>
@@ -125,6 +154,7 @@ function dischargePatient() {
   font-size: 1rem;
 }
 .hero-info {
+  flex: 1;
   display: flex;
   flex-direction: column;
   gap: 0.4rem;
@@ -137,6 +167,16 @@ function dischargePatient() {
   font-weight: 700;
   color: var(--color-text);
 }
+.edit-btn {
+  background: none;
+  border: 0;
+  font-size: 1.15rem;
+  color: var(--color-primary);
+  padding: 0.5rem;
+  cursor: pointer;
+  border-radius: 50%;
+}
+.edit-btn:hover { background: var(--color-bg); }
 
 .section-title {
   font-size: 1rem;

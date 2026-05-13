@@ -110,6 +110,17 @@ npm run build
 - API erweitert um `createPatient`, `updatePatient`, `deletePatient` (inkl. Reverse-Mapping `mapToBackend(p)` für Status/Klinikum).
 - Klinikum wird vorläufig per ID-Eingabefeld referenziert; in Iteration 11 wird daraus ein Dropdown mit den Klinika aus `/api/klinikum`.
 
+### Iteration 10: Patient Search and Filter
+
+- `components/PatientFilter.vue` — zwei Dropdowns:
+  - **Status**: Alle / Stationär / Ambulant.
+  - **Klinikum**: „Alle Klinika" + die per `fetchKlinika()` aus `/api/klinikum` geladenen Klinika.
+  - „Zurücksetzen"-Button leert alle Filter (inkl. Suchstring).
+- `stores/filter.js` erweitert um `statusFilter` und `klinikumFilter`. Pinia hält den Filter-State über Navigationen hinweg.
+- `api/patients.js#fetchPatients` hängt `?name=…&status=…&klinikum=…` an die Backend-URL an.
+- `api/klinika.js` (neu) — `fetchKlinika()`.
+- `PatientList.vue` ruft den Backend-Filter mit 250 ms Debounce auf, sobald sich einer der drei Filter ändert (Such-Tippen führt nicht mehr zu einem Call pro Tastendruck). Lokales Client-Filtering wurde entfernt — das Backend filtert jetzt.
+
 ### Iteration 9 (fix): Custom Toast + Confirm-Dialog
 
 - Browser-eigene `alert()`/`confirm()` ersetzt durch eigene UI-Komponenten:

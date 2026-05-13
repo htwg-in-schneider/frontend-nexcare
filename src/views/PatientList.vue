@@ -1,26 +1,33 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { storeToRefs } from 'pinia';
 import { fetchPatients } from '@/api/patients.js';
 import { useFilterStore } from '@/stores/filter.js';
 import AppHeader from '@/components/AppHeader.vue';
 import SearchBar from '@/components/SearchBar.vue';
+import PatientFilter from '@/components/PatientFilter.vue';
 import PatientCard from '@/components/PatientCard.vue';
 
 const router = useRouter();
 const filterStore = useFilterStore();
-const { searchQuery } = storeToRefs(filterStore);
+const { searchQuery, statusFilter, klinikumFilter } = storeToRefs(filterStore);
 
 const patients = ref([]);
 const loading = ref(false);
 const error = ref(null);
 
+let debounceTimer = null;
+
 async function loadPatients() {
   loading.value = true;
   error.value = null;
   try {
-    patients.value = await fetchPatients();
+    patients.value = await fetchPatients({
+      name: searchQuery.value || undefined,
+      status: statusFilter.value || undefined,
+      klinikum: klinikumFilter.value || undefined,
+    });
   } catch (err) {
     error.value = err.message ?? 'Unbekannter Fehler beim Laden.';
     patients.value = [];
@@ -31,17 +38,9 @@ async function loadPatients() {
 
 onMounted(loadPatients);
 
-const filteredPatients = computed(() => {
-  const q = searchQuery.value.trim().toLowerCase();
-  if (!q) return patients.value;
-  return patients.value.filter((p) => {
-    const fullName = `${p.vorname} ${p.nachname}`.toLowerCase();
-    return (
-      fullName.includes(q) ||
-      p.versicherungsnr.toLowerCase().includes(q) ||
-      (p.klinikum && p.klinikum.toLowerCase().includes(q))
-    );
-  });
+watch([searchQuery, statusFilter, klinikumFilter], () => {
+  if (debounceTimer) clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(loadPatients, 250);
 });
 
 function openDetail(patient) {
@@ -58,14 +57,15 @@ function addPatient() {
 
   <main class="container">
     <SearchBar v-model="searchQuery" placeholder="Patient suchen..." />
+    <PatientFilter />
 
     <p v-if="loading" class="state-message">Lade Patienten …</p>
     <p v-else-if="error" class="state-message error">
       Patienten konnten nicht geladen werden: {{ error }}
     </p>
-    <ul v-else-if="filteredPatients.length" class="patient-list">
+    <ul v-else-if="patients.length" class="patient-list">
       <PatientCard
-        v-for="patient in filteredPatients"
+        v-for="patient in patients"
         :key="patient.id"
         :patient="patient"
         @click="openDetail"
@@ -85,7 +85,5 @@ function addPatient() {
   color: var(--color-muted);
   margin-top: 2rem;
 }
-.state-message.error {
-  color: #b3372e;
-}
+.state-message.error { color: #b3372e; }
 </style>

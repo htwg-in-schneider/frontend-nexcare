@@ -76,3 +76,11 @@ npm run build
 - `views/PatientList.vue` enthält die Listen-Logik (vorher in `App.vue`), inkl. Header, SearchBar, Patient-Liste, FAB.
 - `views/PatientDetail.vue` rendert das Mockup `patientenAnsicht.png`: Hero-Bereich (großer Avatar + Name + Status), Sektionen „Persönliche Daten", „Aktueller Aufenthalt", „Notfallkontakt" als Definition-List, Aktion-Buttons „Medikamentenplan" und „Patient entlassen". Bei unbekannter id wird ein Fallback-Text angezeigt.
 - `PatientCard`-Klick navigiert über `router.push({ name: 'patient-detail', params: { id } })`.
+
+### Iteration 7: State management with Pinia
+
+- Pinia installiert (`npm install pinia`), in `main.js` registriert (`createPinia()` + `app.use(pinia)`).
+- `src/stores/filter.js`: `useFilterStore()` mit `searchQuery` State und `setSearchQuery`/`reset` Actions.
+- `PatientList.vue` nutzt den Store statt eines lokalen Refs: Suchstring überlebt jetzt Navigationen (Liste → Detail → Zurück), und ist bereit für die in Iteration 10 kommende Server-side-Suche.
+- `searchQuery` wird über `storeToRefs(filterStore)` an `SearchBar`s `v-model` gebunden.
+- Lokales Client-Filtering der Patientenliste nach Name/Versicherungsnr/Klinikum (vor dem REST-Wechsel in Iter 8b).

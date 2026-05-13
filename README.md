@@ -46,3 +46,12 @@ npm run build
 - `App.vue` rendert die Patientenliste jetzt dynamisch mit `v-for`.
 - Klick auf eine Patient-Card löst aktuell einen `alert()` mit Name/Versicherungsnr. aus (Detail-View kommt in Iteration 6).
 - Initialen, Statusklasse und Anzeigewerte werden in `<script setup>` aus dem Patientenobjekt abgeleitet.
+
+### Iteration 4: High-Level components
+
+- Vue-Komponenten unter `src/components/`:
+  - `PatientCard.vue` (Props: `patient`, Emits: `click`) — Avatar, Name, Meta, Status-Badge, Chevron.
+  - `AppHeader.vue` (Props: `title`, `showBack`, Emits: `back`) — Header mit Zurück-Button und Titel.
+  - `BottomNav.vue` (Props: `active`) — 4 Tabs, der aktive wird über `active`-Prop gesetzt; nicht implementierte Tabs zeigen einen Hinweis.
+  - `SearchBar.vue` (`v-model` Support, `placeholder` Prop) — Suchfeld mit Lupen-Icon.
+- `App.vue` ist deutlich schlanker und komponiert die High-Level-Komponenten.

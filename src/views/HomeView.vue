@@ -4,6 +4,8 @@ import { useRouter } from 'vue-router';
 
 const router = useRouter();
 const mobileOpen = ref(false);
+
+// Kontakt-Modal
 const contactOpen = ref(false);
 const contact = ref({ name: '', email: '', message: '' });
 
@@ -21,6 +23,26 @@ function sendContact() {
   );
   window.location.href = `mailto:info@nexcare.de?subject=${subject}&body=${body}`;
   closeContact();
+}
+
+// Karriere-Modal
+const karriereOpen = ref(false);
+const karriere = ref({ name: '', email: '', position: '', message: '' });
+
+function openKarriere() {
+  karriereOpen.value = true;
+  mobileOpen.value = false;
+}
+function closeKarriere() {
+  karriereOpen.value = false;
+}
+function sendKarriere() {
+  const subject = encodeURIComponent('NexCare Initiativbewerbung von ' + karriere.value.name);
+  const body = encodeURIComponent(
+    `Name: ${karriere.value.name}\nE-Mail: ${karriere.value.email}\nGewünschte Stelle: ${karriere.value.position}\n\n${karriere.value.message}`
+  );
+  window.location.href = `mailto:karriere@nexcare.de?subject=${subject}&body=${body}`;
+  closeKarriere();
 }
 function scrollTo(id) {
   mobileOpen.value = false;
@@ -329,7 +351,7 @@ function scrollTo(id) {
           <ul>
             <li><a href="#">Über uns</a></li>
             <li><a href="#">Partner</a></li>
-            <li><a href="#">Karriere</a></li>
+            <li><a href="#" @click.prevent="openKarriere()">Karriere</a></li>
             <li><a href="#" @click.prevent="openContact()">Kontakt</a></li>
           </ul>
         </div>
@@ -349,6 +371,40 @@ function scrollTo(id) {
       </div>
     </div>
   </footer>
+
+  <!-- KARRIERE MODAL -->
+  <Teleport to="body">
+    <div v-if="karriereOpen" class="modal-overlay" @click.self="closeKarriere">
+      <div class="modal-box" role="dialog" aria-modal="true" aria-label="Karriere bei NexCare">
+        <div class="modal-head">
+          <h3>Karriere bei NexCare</h3>
+          <button class="modal-close" @click="closeKarriere" aria-label="Schließen">✕</button>
+        </div>
+        <form class="modal-body" @submit.prevent="sendKarriere">
+          <div class="form-group">
+            <label for="k-name">Name *</label>
+            <input id="k-name" v-model="karriere.name" type="text" placeholder="Max Mustermann" required />
+          </div>
+          <div class="form-group">
+            <label for="k-email">E-Mail *</label>
+            <input id="k-email" v-model="karriere.email" type="email" placeholder="max@beispiel.de" required />
+          </div>
+          <div class="form-group">
+            <label for="k-position">Gewünschte Stelle *</label>
+            <input id="k-position" v-model="karriere.position" type="text" placeholder="z.B. Frontend-Entwickler" required />
+          </div>
+          <div class="form-group">
+            <label for="k-msg">Nachricht *</label>
+            <textarea id="k-msg" v-model="karriere.message" rows="4" placeholder="Erzählen Sie uns etwas über sich..." required></textarea>
+          </div>
+          <div class="modal-foot">
+            <button type="button" class="btn btn-ghost" @click="closeKarriere">Abbrechen</button>
+            <button type="submit" class="btn btn-primary">Bewerbung senden</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </Teleport>
 
   <!-- CONTACT MODAL -->
   <Teleport to="body">

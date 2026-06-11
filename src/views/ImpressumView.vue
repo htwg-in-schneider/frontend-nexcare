@@ -11,28 +11,24 @@ const router = useRouter();
       </button>
       <h1>Impressum</h1>
 
-      <h2>Angaben gemäß § 5 TMG</h2>
+      <p style="background:#f0f4f8;border-left:3px solid #1488C7;padding:0.75rem 1rem;border-radius:6px;font-size:0.9rem;">
+        Dieses Projekt entstand im Rahmen des Wahlpflichtfachs Webtechnologien im
+        Studiengang Medizin- und Gesundheitsinformatik an der Hochschule Konstanz (HTWG)
+        und dient ausschließlich Lehr- und Demonstrationszwecken.
+      </p>
+
+      <h2>Angaben gemäß § 5 DDG</h2>
       <p>
-        NexCare GmbH<br>
-        Musterstraße 1<br>
+        NexCare Uniprojekt GmbH<br>
+        c/o Hochschule Konstanz – Technik, Wirtschaft und Gestaltung (HTWG)<br>
+        Alfred-Wachtel-Straße 8<br>
         78462 Konstanz<br>
         Deutschland
       </p>
 
       <h2>Kontakt</h2>
       <p>
-        Telefon: +49 (0) 7531 000000<br>
         E-Mail: info@nexcare.de
-      </p>
-
-      <h2>Vertreten durch</h2>
-      <p>Prof. Dr. Johannes Schneider (Geschäftsführer)</p>
-
-      <h2>Registereintrag</h2>
-      <p>
-        Eintragung im Handelsregister.<br>
-        Registergericht: Amtsgericht Freiburg<br>
-        Registernummer: HRB 123456
       </p>
 
       <h2>Haftungsausschluss</h2>

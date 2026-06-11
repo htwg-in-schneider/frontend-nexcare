@@ -360,13 +360,11 @@ function scrollTo(id) {
           <ul>
             <li><router-link to="/impressum">Impressum</router-link></li>
             <li><router-link to="/datenschutz">Datenschutz</router-link></li>
-            <li><a href="#">AGB</a></li>
-            <li><a href="#">Status</a></li>
           </ul>
         </div>
       </div>
       <div class="foot-bottom">
-        <span>© 2026 NexCare GmbH · Hergestellt in Deutschland</span>
+        <span>© 2026 NexCare Uniprojekt GmbH · Hergestellt in Deutschland</span>
         <span>Made with care for clinical teams.</span>
       </div>
     </div>

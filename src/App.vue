@@ -20,7 +20,8 @@ setTokenGetter(getAccessTokenSilently)
 watch(isAuthenticated, async (loggedIn) => {
   if (loggedIn) {
     await userStore.loadProfile()
-    if (route.name === 'home') {
+    const publicRoutes = ['home', 'impressum', 'datenschutz', null, undefined]
+    if (publicRoutes.includes(route.name)) {
       router.push({ name: 'dashboard' })
     }
   } else {

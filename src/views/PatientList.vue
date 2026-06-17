@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { storeToRefs } from 'pinia';
 import { fetchPatients } from '@/api/patients.js';
 import { useFilterStore } from '@/stores/filter.js';
@@ -10,6 +11,7 @@ import PatientFilter from '@/components/PatientFilter.vue';
 import PatientCard from '@/components/PatientCard.vue';
 
 const router = useRouter();
+const { isAuthenticated } = useAuth0();
 const filterStore = useFilterStore();
 const { searchQuery, statusFilter, klinikumFilter } = storeToRefs(filterStore);
 
@@ -74,7 +76,7 @@ function addPatient() {
     <p v-else class="state-message">Keine Patienten gefunden.</p>
   </main>
 
-  <button class="fab" aria-label="Patient hinzufügen" @click="addPatient">
+  <button v-if="isAuthenticated" class="fab" aria-label="Patient hinzufügen" @click="addPatient">
     <i class="bi bi-plus-lg"></i>
   </button>
 </template>

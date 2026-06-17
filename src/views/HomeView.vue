@@ -1,8 +1,10 @@
 <script setup>
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuth0 } from '@auth0/auth0-vue';
 
 const router = useRouter();
+const { loginWithRedirect } = useAuth0();
 const mobileOpen = ref(false);
 
 // Kontakt-Modal
@@ -71,7 +73,7 @@ function scrollTo(id) {
         </ul>
       </nav>
       <div class="actions">
-        <a class="btn btn-ghost" @click.prevent="router.push('/patients')">Anmelden</a>
+        <a class="btn btn-ghost" @click.prevent="loginWithRedirect()">Anmelden</a>
         <a class="btn btn-primary" @click.prevent="openContact()">Demo anfragen</a>
         <button class="burger" aria-label="Menü" @click="mobileOpen = !mobileOpen">
           <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
@@ -84,7 +86,7 @@ function scrollTo(id) {
       <a href="#" @click.prevent="scrollTo('rollen')">Rollen</a>
       <a href="#" @click.prevent="scrollTo('sicherheit')">Medikation</a>
       <a href="#" @click.prevent="openContact()">Kontakt</a>
-      <a href="#" @click.prevent="router.push('/patients')">Anmelden</a>
+      <a href="#" @click.prevent="loginWithRedirect()">Anmelden</a>
     </div>
   </header>
 
@@ -317,7 +319,7 @@ function scrollTo(id) {
           <p>Anmelden mit einem der Demo-Benutzer oder einfach in der lokalen Umgebung starten.</p>
         </div>
         <div style="display:flex;gap:10px;flex-wrap:wrap">
-          <a class="btn btn-primary btn-lg" @click.prevent="router.push('/patients')">Anmelden</a>
+          <a class="btn btn-primary btn-lg" @click.prevent="loginWithRedirect()">Anmelden</a>
           <a class="btn btn-ghost btn-lg" href="#" @click.prevent="scrollTo('module')">Module ansehen</a>
         </div>
       </div>

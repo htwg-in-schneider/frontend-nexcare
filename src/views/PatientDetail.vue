@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuth0 } from '@auth0/auth0-vue';
 import { fetchPatient, deletePatient } from '@/api/patients.js';
 import { useUiStore } from '@/stores/ui.js';
 import AppHeader from '@/components/AppHeader.vue';
@@ -14,6 +15,7 @@ const props = defineProps({
 
 const router = useRouter();
 const ui = useUiStore();
+const { isAuthenticated } = useAuth0();
 const patient = ref(null);
 const loading = ref(false);
 const error = ref(null);
@@ -91,7 +93,7 @@ async function dischargePatient() {
           <h2 class="hero-name">{{ patient.vorname }} {{ patient.nachname }}</h2>
           <StatusBadge :status="patient.status" />
         </div>
-        <button class="edit-btn" aria-label="Bearbeiten" @click="editPatient">
+        <button v-if="isAuthenticated" class="edit-btn" aria-label="Bearbeiten" @click="editPatient">
           <i class="bi bi-pencil"></i>
         </button>
       </section>
@@ -124,7 +126,7 @@ async function dischargePatient() {
 
       <div class="action-buttons">
         <Button variant="primary" @click="showMedikamentenplan">Medikamentenplan</Button>
-        <Button variant="primary" @click="dischargePatient">Patient entlassen</Button>
+        <Button v-if="isAuthenticated" variant="primary" @click="dischargePatient">Patient entlassen</Button>
       </div>
     </template>
 

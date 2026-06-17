@@ -2,19 +2,13 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useAuth0 } from '@auth0/auth0-vue'
+import { useUserStore } from '@/stores/user.js'
 import BottomNavItem from './BottomNavItem.vue'
 
 const router = useRouter()
 const route = useRoute()
-const { isAuthenticated, loginWithRedirect, logout, user } = useAuth0()
-
-// Admin-Erkennung über Auth0-Claim (wird nach Login aus Backend-Profil bestimmt)
-// Hier nutzen wir den Pinia-Store falls verfügbar, sonst nur Login-Status
-const isAdmin = computed(() => {
-  // Auth0 custom claim für Rolle, gesetzt über Auth0 Actions/Rules
-  const roles = user.value?.['https://nexcare.api/roles'] ?? []
-  return roles.includes('ADMIN')
-})
+const { isAuthenticated, loginWithRedirect, logout } = useAuth0()
+const userStore = useUserStore()
 
 const active = computed(() => {
   const name = route.name ?? ''
@@ -50,7 +44,7 @@ function handleLogout() {
         @click="router.push('/patients')"
       />
       <BottomNavItem
-        v-if="isAuthenticated && isAdmin"
+        v-if="isAuthenticated && userStore.isAdmin"
         icon="bi-shield-check"
         label="Admin"
         :active="active === 'admin'"

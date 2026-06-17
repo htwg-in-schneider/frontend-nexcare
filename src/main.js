@@ -14,6 +14,8 @@ const auth0 = createAuth0({
   authorizationParams: {
     audience: import.meta.env.VITE_AUTH0_AUDIENCE,
     redirect_uri: window.location.origin + import.meta.env.BASE_URL,
+    // Force login screen – no sign-up tab
+    screen_hint: 'login',
   },
 })
 

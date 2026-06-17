@@ -48,6 +48,23 @@ const routes = [
     beforeEnter: authGuard,
   },
 
+  // Medikamentenplan (UC4, UC5)
+  {
+    path: '/patient/:patientId/medikamentenplan',
+    name: 'medikamentenplan',
+    component: () => import('@/views/MedikamentenplanView.vue'),
+    props: (route) => ({ patientId: Number(route.params.patientId) }),
+    beforeEnter: authGuard,
+  },
+
+  // Bettenverwaltung (UC2, UC3, UC8)
+  {
+    path: '/betten',
+    name: 'betten',
+    component: () => import('@/views/BettenView.vue'),
+    beforeEnter: authGuard,
+  },
+
   // Benutzerprofil
   {
     path: '/profile',
@@ -73,6 +90,12 @@ const routes = [
     path: '/admin/users',
     name: 'admin-users',
     component: () => import('@/views/admin/UserAdmin.vue'),
+    beforeEnter: authGuard,
+  },
+  {
+    path: '/admin/medikamente',
+    name: 'admin-medikamente',
+    component: () => import('@/views/admin/MedikamentAdmin.vue'),
     beforeEnter: authGuard,
   },
 

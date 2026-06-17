@@ -12,10 +12,10 @@ const userStore = useUserStore()
 
 const active = computed(() => {
   const name = route.name ?? ''
-  if (name === 'patient-list') return 'patienten'
+  if (name === 'patient-list' || name.startsWith('aufnahme') || name === 'patient-detail' || name === 'patient-edit' || name === 'medikamentenplan') return 'patienten'
+  if (name === 'betten') return 'betten'
   if (name.startsWith('admin')) return 'admin'
   if (name === 'profile') return 'account'
-  if (name.startsWith('aufnahme')) return 'patienten'
   return ''
 })
 
@@ -42,6 +42,13 @@ function handleLogout() {
         label="Patienten"
         :active="active === 'patienten'"
         @click="router.push('/patients')"
+      />
+      <BottomNavItem
+        v-if="isAuthenticated"
+        icon="bi-hospital"
+        label="Betten"
+        :active="active === 'betten'"
+        @click="router.push('/betten')"
       />
       <BottomNavItem
         v-if="isAuthenticated && userStore.isAdmin"

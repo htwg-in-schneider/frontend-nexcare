@@ -56,7 +56,7 @@ function editPatient() {
 }
 
 function showMedikamentenplan() {
-  ui.showToast('Medikamentenplan ist noch nicht implementiert.', { variant: 'info' });
+  router.push({ name: 'medikamentenplan', params: { patientId: props.id } });
 }
 
 async function dischargePatient() {

@@ -21,7 +21,7 @@ watch(isAuthenticated, async (loggedIn) => {
   if (loggedIn) {
     await userStore.loadProfile()
     if (route.name === 'home') {
-      router.push({ name: 'patient-list' })
+      router.push({ name: 'dashboard' })
     }
   } else {
     userStore.clear()

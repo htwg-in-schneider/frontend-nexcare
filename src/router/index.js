@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from '@auth0/auth0-vue'
 import HomeView from '@/views/HomeView.vue'
 import PatientList from '@/views/PatientList.vue'
+import DashboardView from '@/views/DashboardView.vue'
 import PatientDetail from '@/views/PatientDetail.vue'
 import EditPatient from '@/views/EditPatient.vue'
 import ImpressumView from '@/views/ImpressumView.vue'
@@ -9,6 +10,14 @@ import DatenschutzView from '@/views/DatenschutzView.vue'
 
 const routes = [
   { path: '/', name: 'home', component: HomeView },
+
+  // Dashboard (eingeloggt)
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView,
+    beforeEnter: authGuard,
+  },
 
   // Patientenliste (öffentlich lesbar)
   { path: '/patients', name: 'patient-list', component: PatientList },

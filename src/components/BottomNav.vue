@@ -12,6 +12,7 @@ const userStore = useUserStore()
 
 const active = computed(() => {
   const name = route.name ?? ''
+  if (name === 'dashboard') return 'dashboard'
   if (name === 'patient-list' || name.startsWith('aufnahme') || name === 'patient-detail' || name === 'patient-edit' || name === 'medikamentenplan') return 'patienten'
   if (name === 'betten') return 'betten'
   if (name.startsWith('admin')) return 'admin'
@@ -36,6 +37,13 @@ function handleLogout() {
         label="Home"
         :active="false"
         @click="router.push('/')"
+      />
+      <BottomNavItem
+        v-if="isAuthenticated"
+        icon="bi-grid"
+        label="Dashboard"
+        :active="active === 'dashboard'"
+        @click="router.push('/dashboard')"
       />
       <BottomNavItem
         icon="bi-person-fill"

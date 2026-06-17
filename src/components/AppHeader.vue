@@ -1,10 +1,22 @@
 <script setup>
-defineProps({
+import { useRouter } from 'vue-router'
+
+const props = defineProps({
   title: { type: String, required: true },
   showBack: { type: Boolean, default: true },
-});
+  backRoute: { type: String, default: null }, // optionaler Router-Pfad für den Zurück-Button
+})
 
-defineEmits(['back']);
+const emit = defineEmits(['back'])
+const router = useRouter()
+
+function handleBack() {
+  if (props.backRoute) {
+    router.push(props.backRoute)
+  } else {
+    emit('back')
+  }
+}
 </script>
 
 <template>
@@ -14,7 +26,7 @@ defineEmits(['back']);
         v-if="showBack"
         class="back-btn"
         aria-label="Zurück"
-        @click="$emit('back')"
+        @click="handleBack"
       >
         <i class="bi bi-arrow-left"></i>
       </button>

@@ -32,60 +32,22 @@ function handleLogout() {
 <template>
   <nav class="bottom-nav" aria-label="Hauptnavigation">
     <div class="nav-inner">
-      <BottomNavItem
-        icon="bi-house"
-        label="Home"
-        :active="false"
-        @click="router.push('/')"
-      />
-      <BottomNavItem
-        v-if="isAuthenticated"
-        icon="bi-grid"
-        label="Dashboard"
-        :active="active === 'dashboard'"
-        @click="router.push('/dashboard')"
-      />
-      <BottomNavItem
-        icon="bi-person-fill"
-        label="Patienten"
-        :active="active === 'patienten'"
-        @click="router.push('/patients')"
-      />
-      <BottomNavItem
-        v-if="isAuthenticated"
-        icon="bi-hospital"
-        label="Betten"
-        :active="active === 'betten'"
-        @click="router.push('/betten')"
-      />
-      <BottomNavItem
-        v-if="isAuthenticated && userStore.isAdmin"
-        icon="bi-shield-check"
-        label="Admin"
-        :active="active === 'admin'"
-        @click="router.push('/admin')"
-      />
-      <BottomNavItem
-        v-if="isAuthenticated"
-        icon="bi-person-circle"
-        label="Profil"
-        :active="active === 'account'"
-        @click="router.push('/profile')"
-      />
-      <BottomNavItem
-        v-if="isAuthenticated"
-        icon="bi-box-arrow-right"
-        label="Abmelden"
-        :active="false"
-        @click="handleLogout"
-      />
-      <BottomNavItem
-        v-else
-        icon="bi-box-arrow-in-right"
-        label="Anmelden"
-        :active="false"
-        @click="handleLogin"
-      />
+      <!-- Nicht eingeloggt: Home + Patienten + Anmelden -->
+      <template v-if="!isAuthenticated">
+        <BottomNavItem icon="bi-house" label="Home" :active="false" @click="router.push('/')" />
+        <BottomNavItem icon="bi-person-fill" label="Patienten" :active="active === 'patienten'" @click="router.push('/patients')" />
+        <BottomNavItem icon="bi-box-arrow-in-right" label="Anmelden" :active="false" @click="handleLogin" />
+      </template>
+
+      <!-- Eingeloggt -->
+      <template v-else>
+        <BottomNavItem icon="bi-grid" label="Dashboard" :active="active === 'dashboard'" @click="router.push('/dashboard')" />
+        <BottomNavItem icon="bi-person-fill" label="Patienten" :active="active === 'patienten'" @click="router.push('/patients')" />
+        <BottomNavItem icon="bi-hospital" label="Betten" :active="active === 'betten'" @click="router.push('/betten')" />
+        <BottomNavItem v-if="userStore.isAdmin" icon="bi-shield-check" label="Admin" :active="active === 'admin'" @click="router.push('/admin')" />
+        <BottomNavItem icon="bi-person-circle" label="Profil" :active="active === 'account'" @click="router.push('/profile')" />
+        <BottomNavItem icon="bi-box-arrow-right" label="Abmelden" :active="false" @click="handleLogout" />
+      </template>
     </div>
   </nav>
 </template>

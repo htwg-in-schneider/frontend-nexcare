@@ -59,7 +59,7 @@ function next() {
           <label>
             <span>Klinikum *</span>
             <select v-model="form.klinikumId" required>
-              <option :value="null">– bitte wählen –</option>
+              <option value="">– bitte wählen –</option>
               <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
             </select>
           </label>

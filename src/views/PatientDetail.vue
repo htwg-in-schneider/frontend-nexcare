@@ -37,14 +37,13 @@ onMounted(() => loadPatient(props.id));
 watch(() => props.id, (newId) => loadPatient(newId));
 
 function getInitials(p) {
-  return (p.vorname.charAt(0) + p.nachname.charAt(0)).toUpperCase();
+  return ((p?.vorname?.charAt(0) ?? '?') + (p?.nachname?.charAt(0) ?? '?')).toUpperCase();
 }
 
 const geburtsdatumDe = computed(() => {
   const iso = patient.value?.geburtsdatum;
   if (!iso) return '–';
-  const [y, m, d] = iso.split('-');
-  return `${d}.${m}.${y}`;
+  return new Intl.DateTimeFormat('de-DE').format(new Date(iso + 'T00:00:00Z'));
 });
 
 function goBack() {
@@ -102,8 +101,8 @@ async function dischargePatient() {
       <dl class="info-card">
         <div class="info-row"><dt>Geburtsdatum</dt><dd>{{ geburtsdatumDe }}</dd></div>
         <div class="info-row"><dt>Versicherungsnr.</dt><dd>{{ patient.versicherungsnr }}</dd></div>
-        <div class="info-row"><dt>Telefon</dt><dd>{{ patient.telefon }}</dd></div>
-        <div class="info-row"><dt>E-Mail</dt><dd>{{ patient.email }}</dd></div>
+        <div class="info-row"><dt>Telefon</dt><dd><a :href="`tel:${patient.telefon}`">{{ patient.telefon }}</a></dd></div>
+        <div class="info-row"><dt>E-Mail</dt><dd><a :href="`mailto:${patient.email}`">{{ patient.email }}</a></dd></div>
         <div class="info-row"><dt>Adresse</dt><dd>{{ patient.adresse }}</dd></div>
       </dl>
 
@@ -121,7 +120,7 @@ async function dischargePatient() {
       <dl class="info-card">
         <div class="info-row"><dt>Name</dt><dd>{{ patient.notfallkontakt.name }}</dd></div>
         <div class="info-row"><dt>Beziehung</dt><dd>{{ patient.notfallkontakt.beziehung }}</dd></div>
-        <div class="info-row"><dt>Telefon</dt><dd>{{ patient.notfallkontakt.telefon }}</dd></div>
+        <div class="info-row"><dt>Telefon</dt><dd><a :href="`tel:${patient.notfallkontakt.telefon}`">{{ patient.notfallkontakt.telefon }}</a></dd></div>
       </dl>
 
       <div class="action-buttons">

@@ -79,7 +79,7 @@ function onBack() {
           {{ saving ? 'Speichere …' : 'Speichern' }}
         </button>
         <button type="button" class="app-btn app-btn-danger" @click="onDelete">
-          Patient entlassen (löschen)
+          Patient entlassen
         </button>
       </template>
     </PatientForm>

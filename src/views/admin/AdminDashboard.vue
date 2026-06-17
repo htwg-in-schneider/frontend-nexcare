@@ -6,7 +6,7 @@ const router = useRouter()
 </script>
 
 <template>
-  <AppHeader title="Administration" :show-back="true" back-route="/patients" />
+  <AppHeader title="Administration" :show-back="true" back-route="/dashboard" />
 
   <main class="container">
     <p class="subtitle">Verwaltungsbereich für Administratoren.</p>

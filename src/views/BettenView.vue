@@ -63,7 +63,11 @@ const zimmerGruppen = computed(() => {
     }
     map.get(key).patienten.push(p)
   }
-  return Array.from(map.values()).sort((a, b) => a.zimmer.localeCompare(b.zimmer))
+  return Array.from(map.values()).sort((a, b) => {
+    const aNum = parseInt(a.zimmer) || 0
+    const bNum = parseInt(b.zimmer) || 0
+    return aNum !== bNum ? aNum - bNum : a.zimmer.localeCompare(b.zimmer)
+  })
 })
 
 const selectedKlinikumName = computed(() => {

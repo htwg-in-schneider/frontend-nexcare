@@ -28,9 +28,13 @@ onMounted(async () => {
 })
 
 async function save() {
+  if (!profile.value.name?.trim()) {
+    ui.showToast('Name ist erforderlich.', { variant: 'error' })
+    return
+  }
   saving.value = true
   try {
-    const updated = await updateProfile({ name: profile.value.name, adresse: profile.value.adresse })
+    const updated = await updateProfile({ name: profile.value.name.trim(), adresse: profile.value.adresse })
     profile.value = { ...updated }
     ui.showToast('Profil gespeichert.', { variant: 'success' })
   } catch {
@@ -42,7 +46,7 @@ async function save() {
 </script>
 
 <template>
-  <AppHeader title="Mein Profil" :show-back="true" back-route="/patients" />
+  <AppHeader title="Mein Profil" :show-back="true" back-route="/dashboard" />
 
   <main class="container">
     <p v-if="loading" class="state-msg">Lade Profil …</p>

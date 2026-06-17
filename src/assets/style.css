@@ -1,0 +1,238 @@
+/* Nexcare design tokens */
+:root {
+  --color-primary: #1e3a5f;
+  --color-primary-dark: #15293f;
+  --color-bg: #f5f6f8;
+  --color-card: #ffffff;
+  --color-border: #e6e9ee;
+  --color-muted: #6c7a8d;
+  --color-text: #1a2238;
+
+  --color-avatar-bg: #c8d8e8;
+  --color-avatar-text: #1e3a5f;
+
+  --color-stationaer-bg: #d6efd9;
+  --color-stationaer-text: #2d6a3a;
+  --color-ambulant-bg: #cfe1ef;
+  --color-ambulant-text: #1e3a5f;
+
+  --shadow-card: 0 0.0625rem 0.1875rem rgba(20, 30, 60, 0.06),
+                 0 0.0625rem 0.125rem rgba(20, 30, 60, 0.04);
+  --shadow-card-hover: 0 0.25rem 0.625rem rgba(20, 30, 60, 0.08);
+  --shadow-fab: 0 0.25rem 0.75rem rgba(30, 58, 95, 0.35);
+  --radius-card: 0.875rem;
+  --radius-pill: 62.4375rem;
+  --border-hair: 0.0625rem;
+
+  /* horizontal page padding scales with viewport */
+  --page-pad: clamp(0.75rem, 4%, 2rem);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  font-size: 100%;
+  -webkit-font-smoothing: antialiased;
+  min-height: 100vh;
+  min-height: 100dvh; /* dynamic viewport height — accounts for mobile browser chrome */
+}
+
+#app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
+  width: 100%;
+}
+
+.container {
+  flex: 1;                  /* main content fills remaining vertical space */
+  width: 100%;
+  padding-left: var(--page-pad);
+  padding-right: var(--page-pad);
+}
+
+/* ---------- Header ---------- */
+.app-header {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  padding: 1rem var(--page-pad);
+  border-bottom: var(--border-hair) solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.app-header .header-inner {
+  display: grid;
+  grid-template-columns: 2.5rem 1fr 2.5rem;
+  align-items: center;
+  width: 100%;
+}
+.app-header .back-btn {
+  background: none;
+  border: 0;
+  font-size: 1.25rem;
+  color: var(--color-text);
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  justify-self: start;
+}
+.app-header .header-title {
+  text-align: center;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ---------- Search ---------- */
+.search-wrapper {
+  position: relative;
+  margin: 1rem 0 1.25rem;
+}
+.search-wrapper .bi-search {
+  position: absolute;
+  left: 1.125rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-muted);
+  font-size: 1rem;
+  pointer-events: none;
+}
+.search-input {
+  width: 100%;
+  padding: 0.875rem 1.125rem 0.875rem 2.75rem;
+  border: var(--border-hair) solid var(--color-border);
+  background: #fff;
+  border-radius: var(--radius-card);
+  font-size: 0.95rem;
+  color: var(--color-text);
+}
+.search-input::placeholder { color: var(--color-muted); }
+.search-input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
+
+/* ---------- Patient list ---------- */
+/* auto-fill grid: 1 column on narrow viewports, 2+ on wider ones — no fixed breakpoints */
+.patient-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 22rem), 1fr));
+  gap: 0.75rem;
+}
+
+.patient-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  grid-template-areas: "avatar info badge chevron";
+  align-items: center;
+  column-gap: 0.875rem;
+  row-gap: 0.375rem;
+  background: var(--color-card);
+  border-radius: var(--radius-card);
+  padding: 0.875rem 1rem;
+  box-shadow: var(--shadow-card);
+  cursor: pointer;
+  transition: transform 0.08s ease, box-shadow 0.12s ease;
+}
+.patient-card:hover {
+  transform: translateY(-0.0625rem);
+  box-shadow: var(--shadow-card-hover);
+}
+
+/* Visual avatar styles live in components/Avatar.vue; here only the grid placement. */
+.avatar { grid-area: avatar; }
+
+.patient-info {
+  grid-area: info;
+  min-width: 0;
+}
+.patient-name {
+  font-weight: 700;
+  font-size: 1rem;
+  color: var(--color-text);
+  margin-bottom: 0.125rem;
+  overflow-wrap: anywhere;
+}
+.patient-meta {
+  font-size: 0.85rem;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+/* Visual status-badge styles live in components/StatusBadge.vue; here only the grid placement. */
+.status-badge {
+  grid-area: badge;
+  justify-self: end;
+}
+
+.chevron {
+  grid-area: chevron;
+  color: var(--color-muted);
+  font-size: 1rem;
+  flex-shrink: 0;
+}
+
+/* ---------- Floating action button ---------- */
+.fab {
+  position: fixed;
+  right: var(--page-pad);
+  bottom: 5.625rem; /* sits above the bottom-nav */
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #fff;
+  border: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  box-shadow: var(--shadow-fab);
+  cursor: pointer;
+  z-index: 20;
+}
+.fab:hover { background: var(--color-primary-dark); }
+
+/* ---------- Bottom navigation (sticky on all viewports) ---------- */
+.bottom-nav {
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  background: #fff;
+  border-top: var(--border-hair) solid var(--color-border);
+  padding: 0.5rem 0 max(0.5rem, env(safe-area-inset-bottom));
+  z-index: 15;
+}
+.bottom-nav .nav-inner {
+  display: flex;
+  width: 100%;
+  justify-content: center;
+  gap: clamp(1.5rem, 8%, 4rem);
+}
+/* Item visuals live in components/BottomNavItem.vue */
+
+/* ---------- Responsive: tiny phones (badge wraps below name) ---------- */
+@media (max-width: 23.74em) { /* < 380px */
+  .patient-card {
+    grid-template-columns: auto 1fr auto;
+    grid-template-areas:
+      "avatar info chevron"
+      ".      badge chevron";
+    padding: 0.75rem 0.875rem;
+    column-gap: 0.625rem;
+  }
+  .status-badge { justify-self: start; }
+  .fab { width: 3.25rem; height: 3.25rem; bottom: 5.125rem; }
+}
+
+/* Note: bottom-nav-item desktop tweaks live in components/BottomNavItem.vue */

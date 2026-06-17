@@ -48,7 +48,7 @@ function openDetail(patient) {
 }
 
 function addPatient() {
-  router.push({ name: 'patient-create' });
+  router.push({ name: 'aufnahme-1' });
 }
 </script>
 

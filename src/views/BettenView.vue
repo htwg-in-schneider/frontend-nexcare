@@ -258,7 +258,12 @@ function goToPatient(id) {
 }
 .assign-btn:hover { background: var(--color-card); color: var(--color-primary); }
 
-/* Modal */
+@media (min-width: 640px) {
+  .zimmer-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+
+<style>
 .overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,.45);
   backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center;
@@ -278,12 +283,12 @@ function goToPatient(id) {
 .modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 0.875rem; }
 .modal-body label { display: flex; flex-direction: column; gap: 0.25rem; }
 .modal-body label > span { font-size: 0.85rem; font-weight: 600; color: var(--color-muted); }
-.modal-body input {
+.modal-body input, .modal-body select {
   padding: 0.625rem 0.75rem; border: 0.0625rem solid var(--color-border);
   border-radius: 0.625rem; font-size: 0.95rem; font-family: inherit;
-  background: #fff; color: var(--color-text);
+  background: #fff; color: var(--color-text); width: 100%;
 }
-.modal-body input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
+.modal-body input:focus, .modal-body select:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
 .modal-foot {
   display: flex; justify-content: flex-end; gap: 0.75rem;
   padding: 1rem 1.5rem; border-top: 0.0625rem solid var(--color-border);
@@ -293,10 +298,8 @@ function goToPatient(id) {
 .app-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 .app-btn-secondary { background: var(--color-surface); color: var(--color-text); border: 0.0625rem solid var(--color-border); }
 .app-btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
-
 @media (min-width: 640px) {
   .overlay { align-items: center; }
   .modal { border-radius: 1rem; }
-  .zimmer-grid { display: grid; grid-template-columns: repeat(2, 1fr); }
 }
 </style>

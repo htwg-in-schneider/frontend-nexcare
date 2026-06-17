@@ -154,21 +154,5 @@ async function onArchivieren(m) {
 .icon-btn { width: 2.1rem; height: 2.1rem; border-radius: 0.5rem; border: 0.0625rem solid var(--color-border); background: var(--color-surface); color: var(--color-text); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.85rem; }
 .icon-btn:hover { background: var(--color-card); }
 .icon-btn.danger:hover { color: #b3372e; border-color: #f5c2be; background: #fdf0ef; }
-/* Modal */
-.overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; z-index: 9999; padding: 1rem; }
-.modal { background: #fff; border-radius: 1rem; width: 100%; max-width: 28rem; box-shadow: 0 20px 60px rgba(0,0,0,.2); }
-.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.5rem; border-bottom: 0.0625rem solid var(--color-border); }
-.modal-head h3 { margin: 0; font-size: 1rem; }
-.close-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--color-muted); }
-.modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.modal-body label { display: flex; flex-direction: column; gap: 0.25rem; }
-.modal-body label > span { font-size: 0.85rem; color: var(--color-muted); }
-.modal-body input { padding: 0.625rem 0.75rem; border: 0.0625rem solid var(--color-border); border-radius: 0.625rem; font-size: 0.95rem; font-family: inherit; background: #fff; color: var(--color-text); }
-.modal-body input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
-.modal-foot { display: flex; justify-content: flex-end; gap: 0.75rem; padding: 1rem 1.5rem; border-top: 0.0625rem solid var(--color-border); }
-.app-btn { padding: 0.75rem 1.25rem; border: 0; border-radius: 0.625rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-.app-btn-primary { background: var(--color-primary); color: #fff; }
-.app-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.app-btn-secondary { background: var(--color-surface); color: var(--color-text); border: 0.0625rem solid var(--color-border); }
-.app-btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 </style>
+

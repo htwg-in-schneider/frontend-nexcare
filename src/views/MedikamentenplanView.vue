@@ -258,35 +258,6 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 }
 .fab:hover { filter: brightness(1.08); }
 
-/* Modal */
-.overlay {
-  position: fixed; inset: 0; background: rgba(0,0,0,.45);
-  backdrop-filter: blur(4px); display: flex; align-items: flex-end; justify-content: center;
-  z-index: 9999; padding: 0;
-}
-.modal {
-  background: #fff; border-radius: 1rem 1rem 0 0;
-  width: 100%; max-width: 40rem;
-  box-shadow: 0 -8px 40px rgba(0,0,0,.18);
-  max-height: 92vh; overflow-y: auto;
-}
-.modal-head {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 1.125rem 1.5rem; border-bottom: 0.0625rem solid var(--color-border);
-  position: sticky; top: 0; background: #fff; z-index: 1;
-}
-.modal-head h3 { margin: 0; font-size: 1rem; }
-.close-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--color-muted); }
-.modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.modal-body label { display: flex; flex-direction: column; gap: 0.25rem; }
-.modal-body label > span { font-size: 0.85rem; color: var(--color-muted); font-weight: 600; }
-.modal-body input {
-  padding: 0.625rem 0.75rem; border: 0.0625rem solid var(--color-border);
-  border-radius: 0.625rem; font-size: 0.95rem; font-family: inherit;
-  background: #fff; color: var(--color-text); width: 100%;
-}
-.modal-body input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
-
 .search-wrap { position: relative; }
 .suggest {
   position: absolute; top: 100%; left: 0; right: 0; z-index: 10;
@@ -301,21 +272,27 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 }
 .suggest li:hover { background: var(--color-surface); }
 .suggest li span { font-size: 0.78rem; color: var(--color-muted); }
-
 .hint { font-size: 0.8rem; color: var(--color-muted); margin: 0.25rem 0 0; }
 .selected-hint { font-size: 0.82rem; color: var(--color-primary); margin: 0.25rem 0 0; }
 .selected-hint i { margin-right: 0.25rem; }
 
-.modal-foot {
-  display: flex; justify-content: flex-end; gap: 0.75rem;
-  padding: 1rem 1.5rem; border-top: 0.0625rem solid var(--color-border);
 }
-.app-btn { padding: 0.75rem 1.25rem; border: 0; border-radius: 0.625rem; font-size: 0.95rem; font-weight: 600; cursor: pointer; }
-.app-btn-primary { background: var(--color-primary); color: #fff; }
-.app-btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-.app-btn-secondary { background: var(--color-surface); color: var(--color-text); border: 0.0625rem solid var(--color-border); }
-.app-btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
+</style>
 
+<style>
+/* Modal – unscoped weil via Teleport in body gerendert */
+.modal {
+  background: #fff; border-radius: 1rem 1rem 0 0;
+  width: 100%; max-width: 40rem;
+  box-shadow: 0 -8px 40px rgba(0,0,0,.18);
+  max-height: 92vh; overflow-y: auto;
+}
+.modal-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 1.125rem 1.5rem; border-bottom: 0.0625rem solid var(--color-border);
+  position: sticky; top: 0; background: #fff; z-index: 1;
+}
+.modal-head h3 { margin: 0; font-size: 1rem; }
 @media (min-width: 640px) {
   .overlay { align-items: center; padding: 1rem; }
   .modal { border-radius: 1rem; max-height: 88vh; }

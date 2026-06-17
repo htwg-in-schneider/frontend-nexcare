@@ -249,6 +249,7 @@ html, body {
   padding: 1rem !important;
 }
 .modal {
+  display: block !important;
   background: #fff !important;
   border-radius: 1rem !important;
   width: 100% !important;

@@ -280,7 +280,7 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 <style>
 /* Modal – unscoped damit Teleport-Elemente die Styles erhalten */
 .overlay { position: fixed !important; inset: 0 !important; background: rgba(0,0,0,.5) !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 99999 !important; padding: 1rem !important; }
-.modal { background: #fff !important; border-radius: 1rem !important; width: 100% !important; max-width: 38rem !important; box-shadow: 0 8px 40px rgba(0,0,0,.28) !important; max-height: 90vh !important; overflow-y: auto !important; }
+.modal { display: block !important; background: #fff !important; border-radius: 1rem !important; width: 100% !important; max-width: 38rem !important; box-shadow: 0 8px 40px rgba(0,0,0,.28) !important; max-height: 90vh !important; overflow-y: auto !important; }
 .modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.5rem; border-bottom: 0.0625rem solid var(--color-border); position: sticky; top: 0; background: #fff; z-index: 1; }
 .modal-head h3 { margin: 0; font-size: 1rem; }
 </style>

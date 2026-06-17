@@ -27,7 +27,7 @@ const filtered = () =>
   )
 
 function openEdit(u) {
-  modal.value = { id: u.id, name: u.name ?? '', adresse: u.adresse ?? '', role: u.role ?? 'REGULAR', email: u.email }
+  modal.value = { id: u.id, name: u.name ?? '', adresse: u.adresse ?? '', role: u.role ?? 'PATIENT', email: u.email }
 }
 
 function closeModal() { modal.value = null }
@@ -50,8 +50,15 @@ async function saveModal() {
   }
 }
 
+const ROLE_LABELS = {
+  PATIENT: 'Patient',
+  KRANKENSCHWESTER: 'Krankenschwester',
+  ARZT: 'Arzt',
+  ADMIN: 'Admin',
+}
+
 function roleLabel(role) {
-  return role === 'ADMIN' ? 'Admin' : 'Benutzer'
+  return ROLE_LABELS[role] ?? role
 }
 </script>
 
@@ -81,7 +88,7 @@ function roleLabel(role) {
           <span class="user-name">{{ u.name }}</span>
           <span class="user-email">{{ u.email }}</span>
         </div>
-        <span class="role-badge" :class="u.role === 'ADMIN' ? 'admin' : 'regular'">
+        <span class="role-badge" :class="u.role?.toLowerCase()">
           {{ roleLabel(u.role) }}
         </span>
         <button class="icon-btn" aria-label="Bearbeiten" @click="openEdit(u)">
@@ -115,7 +122,9 @@ function roleLabel(role) {
           <label>
             <span>Rolle</span>
             <select v-model="modal.role">
-              <option value="REGULAR">Benutzer</option>
+              <option value="PATIENT">Patient</option>
+              <option value="KRANKENSCHWESTER">Krankenschwester</option>
+              <option value="ARZT">Arzt</option>
               <option value="ADMIN">Admin</option>
             </select>
           </label>
@@ -182,7 +191,9 @@ function roleLabel(role) {
   flex-shrink: 0;
 }
 .role-badge.admin { background: #edf4ff; color: #1b4f8a; }
-.role-badge.regular { background: var(--color-surface); color: var(--color-muted); border: 0.0625rem solid var(--color-border); }
+.role-badge.arzt { background: #edfaf4; color: #1b6b40; }
+.role-badge.krankenschwester { background: #fdf4ff; color: #7a1b8a; }
+.role-badge.patient { background: var(--color-surface); color: var(--color-muted); border: 0.0625rem solid var(--color-border); }
 
 .icon-btn {
   width: 2.25rem; height: 2.25rem;

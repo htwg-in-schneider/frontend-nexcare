@@ -101,8 +101,8 @@ function scrollTo(id) {
           <span class="serif">für den klinischen Alltag.</span>
         </h1>
         <p class="lede">
-          NexCare verbindet Patientenverwaltung, Bettenmanagement, Medikamentenplan mit
-          Wechselwirkungs­prüfung und rollenbasierte Benutzerverwaltung in einer Anwendung.
+          NexCare verbindet Patientenverwaltung, Bettenmanagement, Medikamentenplan und
+          rollenbasierte Benutzerverwaltung in einer Anwendung.
         </p>
         <div class="cta-row">
           <a class="btn btn-primary btn-lg" href="#" @click.prevent="openContact()">
@@ -174,9 +174,9 @@ function scrollTo(id) {
             </div>
             <div class="dcard">
               <div class="icn">
-                <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 2l3.5 7.2 8 1.2-5.8 5.6 1.4 7.9L14 20.3l-7.1 3.6 1.4-7.9L2.5 10.4l8-1.2z"/></svg>
+                <svg viewBox="0 0 28 28" fill="currentColor"><path d="M14 4a10 10 0 1 0 0 20A10 10 0 0 0 14 4zm1 15h-2v-6h2v6zm0-8h-2V9h2v2z"/></svg>
               </div>
-              <span class="lbl">Wechselwirkungen</span>
+              <span class="lbl">Benutzerverwaltung</span>
               <span class="open">Öffnen ›</span>
             </div>
           </div>
@@ -213,11 +213,6 @@ function scrollTo(id) {
           <div class="ico"><svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="16" rx="2" stroke="white" stroke-width="1.8"/><path d="M8 3v4M16 3v4M4 11h16M9 15h6M9 18h4" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
           <h3>Medikamentenplan</h3>
           <p>Individueller Medikamentenplan pro Patient mit Wirkstoffsuche im Stammkatalog.</p>
-        </div>
-        <div class="card">
-          <div class="ico red"><svg viewBox="0 0 24 24" fill="none"><path d="M13 3L4 14h7l-1 7 9-11h-7z" stroke="white" stroke-width="1.8" stroke-linejoin="round"/></svg></div>
-          <h3>Wechselwirkungen</h3>
-          <p>Prüfung auf bekannte Wechselwirkungen der aktuell verordneten Medikamente eines Patienten.</p>
         </div>
         <div class="card">
           <div class="ico amber"><svg viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.2" stroke="white" stroke-width="1.8"/><path d="M4 20c1.5-3.6 4.6-5.4 8-5.4S18.5 16.4 20 20" stroke="white" stroke-width="1.8" stroke-linecap="round"/></svg></div>
@@ -266,17 +261,16 @@ function scrollTo(id) {
     </div>
   </section>
 
-  <!-- MEDIKATION & WECHSELWIRKUNGEN -->
+  <!-- MEDIKATION -->
   <section id="sicherheit" class="modules">
     <div class="container security">
       <div>
         <span class="eyebrow">Medikation</span>
-        <h2 class="h2">Medikamentenplan mit Wechselwirkungs­prüfung.</h2>
-        <p class="sub">Jedes Medikament im zentralen Stammkatalog mit Wirkstoff und Dosiereinheit. Im Medikamentenplan eines Patienten lassen sich Mittel über die Suche hinzufügen. Bekannte Wechselwirkungen werden direkt sichtbar.</p>
+        <h2 class="h2">Medikamentenplan für jeden Patienten.</h2>
+        <p class="sub">Jedes Medikament im zentralen Stammkatalog mit Wirkstoff und Dosiereinheit. Im Medikamentenplan eines Patienten lassen sich Mittel über die Suche hinzufügen.</p>
         <div class="checks">
           <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Stammkatalog</b><span>Name, Wirkstoff, Beschreibung, Dosier­einheit zentral gepflegt.</span></div></div>
           <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Suche nach Wirkstoff</b><span>Volltextsuche im Katalog beim Hinzufügen zum Plan.</span></div></div>
-          <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Wechselwirkungs­prüfung</b><span>Eigene Seite für Interaktionen im aktuellen Medikamentenplan.</span></div></div>
           <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Archivierung</b><span>Nicht mehr genutzte Medikamente werden archiviert statt gelöscht.</span></div></div>
           <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>Rollen­gerechter Zugriff</b><span>Arzt und Pflege arbeiten am Plan, Management sieht die Verwaltung.</span></div></div>
           <div class="chk"><svg viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg><div><b>JWT-Authentifizierung</b><span>Jede Aktion ist einem Benutzer mit klarer Rolle zugeordnet.</span></div></div>
@@ -293,12 +287,12 @@ function scrollTo(id) {
             <div style="display:flex;justify-content:space-between"><span>Ramipril</span><span style="color:var(--ink-400)">5 mg</span></div>
           </div>
         </div>
-        <div class="floating f2" style="border:1px solid #F3C6C0">
-          <div style="display:flex;align-items:center;gap:8px;color:var(--red-600);font-weight:700;font-size:13px">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3l10 18H2z" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><path d="M12 10v5M12 18v.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-            Wechselwirkung
+        <div class="floating f2" style="border:1px solid #b8e6c0">
+          <div style="display:flex;align-items:center;gap:8px;color:#1a7a3a;font-weight:700;font-size:13px">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Medikament hinzugefügt
           </div>
-          <div class="small" style="color:var(--ink-700);margin-top:6px">Marcumar × Ibuprofen: erhöhtes Blutungs­risiko.</div>
+          <div class="small" style="color:var(--ink-700);margin-top:6px">Paracetamol 500 mg · 3× täglich</div>
         </div>
         <div class="floating f3">
           <div style="font-weight:600;font-size:14px">Wirkstoff-Suche</div>

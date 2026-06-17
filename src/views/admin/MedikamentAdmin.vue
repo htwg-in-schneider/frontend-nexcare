@@ -156,3 +156,8 @@ async function onArchivieren(m) {
 .icon-btn.danger:hover { color: #b3372e; border-color: #f5c2be; background: #fdf0ef; }
 </style>
 
+<style>
+.overlay { position: fixed !important; inset: 0 !important; background: rgba(0,0,0,.5) !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 99999 !important; padding: 1rem !important; }
+.modal { background: #fff !important; border-radius: 1rem !important; width: 100% !important; max-width: 38rem !important; box-shadow: 0 8px 40px rgba(0,0,0,.28) !important; max-height: 90vh !important; overflow-y: auto !important; }
+</style>
+

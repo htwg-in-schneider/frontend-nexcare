@@ -44,7 +44,6 @@ function handleLogout() {
         <BottomNavItem icon="bi-grid" label="Dashboard" :active="active === 'dashboard'" @click="router.push('/dashboard')" />
         <BottomNavItem icon="bi-person-fill" label="Patienten" :active="active === 'patienten'" @click="router.push('/patients')" />
         <BottomNavItem icon="bi-hospital" label="Betten" :active="active === 'betten'" @click="router.push('/betten')" />
-        <BottomNavItem v-if="userStore.isAdmin" icon="bi-shield-check" label="Admin" :active="active === 'admin'" @click="router.push('/admin')" />
         <BottomNavItem icon="bi-person-circle" label="Profil" :active="active === 'account'" @click="router.push('/profile')" />
         <BottomNavItem icon="bi-box-arrow-right" label="Abmelden" :active="false" @click="handleLogout" />
       </template>

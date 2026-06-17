@@ -82,12 +82,10 @@ const routes = [
     beforeEnter: authGuard,
   },
 
-  // Admin-Bereich
+  // Admin-Bereich (kein separates Admin-Dashboard – Admin-Cards sind im Haupt-Dashboard)
   {
     path: '/admin',
-    name: 'admin',
-    component: () => import('@/views/admin/AdminDashboard.vue'),
-    beforeEnter: authGuard,
+    redirect: '/dashboard',
   },
   {
     path: '/admin/klinika',

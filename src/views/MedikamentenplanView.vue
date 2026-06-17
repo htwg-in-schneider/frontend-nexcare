@@ -275,8 +275,6 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .hint { font-size: 0.8rem; color: var(--color-muted); margin: 0.25rem 0 0; }
 .selected-hint { font-size: 0.82rem; color: var(--color-primary); margin: 0.25rem 0 0; }
 .selected-hint i { margin-right: 0.25rem; }
-
-}
 </style>
 
 <style>

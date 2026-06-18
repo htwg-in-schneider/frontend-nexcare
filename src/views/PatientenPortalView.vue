@@ -9,6 +9,9 @@ import { fetchEigenanteil, bezahlen } from '@/api/zahlung.js'
 import { sendContact } from '@/api/contact.js'
 import { fetchMeinAntrag, submitAntrag } from '@/api/aufnahmeAntrag.js'
 import { fetchKlinika } from '@/api/klinika.js'
+import { authHeaders } from '@/api/auth.js'
+
+const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -146,6 +149,39 @@ async function onKontaktSenden() {
   }
 }
 
+// ─── Nachrichten ─────────────────────────────────────────────────────────────
+const nachrichten = ref([])
+
+async function ladeNachrichten(patientId) {
+  try {
+    const opts = await authHeaders()
+    const res = await fetch(`${BASE}/api/patient/${patientId}/nachrichten`, opts)
+    if (res.ok) nachrichten.value = await res.json()
+  } catch { /* ignorieren */ }
+}
+
+async function markiereGelesen(nachricht) {
+  if (nachricht.gelesen) return
+  try {
+    const opts = await authHeaders()
+    await fetch(`${BASE}/api/patient/${nachricht.patient.id}/nachrichten/${nachricht.id}/gelesen`, {
+      method: 'PATCH', ...opts,
+    })
+    nachricht.gelesen = true
+  } catch { /* ignorieren */ }
+}
+
+const ungeleseneAnzahl = computed(() => nachrichten.value.filter(n => !n.gelesen).length)
+
+const TYP_ICON = { WILLKOMMEN: 'bi-house-heart', AUFNAHME: 'bi-clipboard2-check', BETT: 'bi-hospital', MEDIKAMENT: 'bi-capsule', ALLGEMEIN: 'bi-bell' }
+const TYP_COLOR = { WILLKOMMEN: '#2563eb', AUFNAHME: '#059669', BETT: '#d97706', MEDIKAMENT: '#7c3aed', ALLGEMEIN: '#64748b' }
+
+function formatNachrichtDatum(dt) {
+  if (!dt) return ''
+  const d = new Date(dt)
+  return `${d.getDate()}. ${MONAT_NAMES[d.getMonth()]} ${d.getFullYear()}, ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`
+}
+
 const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4', '#84cc16']
 const colorMap = computed(() => {
   const map = {}
@@ -175,7 +211,8 @@ async function load() {
     if (patient.value?.id) {
       eintraege.value = await fetchMedikamentenplan(patient.value.id)
       await ladeEigenanteil()
-    await ladeAntragDaten()
+      await ladeAntragDaten()
+      await ladeNachrichten(patient.value.id)
     }
   } catch {
     fehler.value = true
@@ -209,6 +246,33 @@ onMounted(load)
       <div v-if="patient" class="status-banner" :class="patient.status?.toLowerCase()">
         <i class="bi" :class="patient.status === 'AUFGENOMMEN' ? 'bi-hospital-fill' : patient.status === 'ENTLASSEN' ? 'bi-house-check-fill' : 'bi-clock-history'"></i>
         <span>{{ patient.status === 'AUFGENOMMEN' ? 'Stationär aufgenommen' : patient.status === 'ENTLASSEN' ? 'Entlassen' : patient.status ?? 'Unbekannt' }}</span>
+      </div>
+
+      <!-- ── Nachrichten ── -->
+      <div v-if="nachrichten.length" class="card nachrichten-card">
+        <div class="card-head">
+          <i class="bi bi-bell-fill card-icon" style="color:#2563eb"></i>
+          <h3>Nachrichten</h3>
+          <span v-if="ungeleseneAnzahl" class="badge-ungelesen">{{ ungeleseneAnzahl }}</span>
+        </div>
+        <ul class="nachrichten-list">
+          <li
+            v-for="n in nachrichten"
+            :key="n.id"
+            :class="['nachricht-item', !n.gelesen && 'ungelesen']"
+            @click="markiereGelesen(n)"
+          >
+            <span class="nachricht-icon" :style="{ background: TYP_COLOR[n.typ] + '18', color: TYP_COLOR[n.typ] }">
+              <i class="bi" :class="TYP_ICON[n.typ] ?? 'bi-bell'"></i>
+            </span>
+            <div class="nachricht-body">
+              <div class="nachricht-titel">{{ n.titel }}</div>
+              <div class="nachricht-inhalt">{{ n.inhalt }}</div>
+              <div class="nachricht-datum">{{ formatNachrichtDatum(n.erstelltAm) }}</div>
+            </div>
+            <span v-if="!n.gelesen" class="dot-ungelesen"></span>
+          </li>
+        </ul>
       </div>
 
       <div class="cards">
@@ -608,5 +672,34 @@ dd { font-size: 0.88rem; color: var(--color-text); margin: 0; font-weight: 500; 
   display: flex; align-items: center; gap: 0.5rem;
   color: #059669; font-weight: 600; font-size: 0.9rem;
   padding: 0.75rem; background: #f0fdf9; border-radius: 0.5rem;
+}
+
+/* ── Nachrichten ── */
+.nachrichten-card { margin-bottom: 1rem; }
+.badge-ungelesen {
+  margin-left: auto; background: #2563eb; color: #fff;
+  font-size: 0.72rem; font-weight: 700; border-radius: 9999px;
+  padding: 0.1rem 0.5rem; min-width: 1.25rem; text-align: center;
+}
+.nachrichten-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
+.nachricht-item {
+  display: flex; align-items: flex-start; gap: 0.75rem;
+  padding: 0.75rem; border-radius: 0.625rem;
+  border: 1px solid var(--color-border); cursor: pointer;
+  transition: background 0.12s;
+}
+.nachricht-item:hover { background: var(--color-surface); }
+.nachricht-item.ungelesen { background: #f0f6ff; border-color: #bfdbfe; }
+.nachricht-icon {
+  width: 2.25rem; height: 2.25rem; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1rem;
+}
+.nachricht-body { flex: 1; min-width: 0; }
+.nachricht-titel { font-size: 0.88rem; font-weight: 700; color: var(--color-text); }
+.nachricht-inhalt { font-size: 0.82rem; color: var(--color-muted); margin-top: 0.15rem; line-height: 1.5; }
+.nachricht-datum { font-size: 0.75rem; color: var(--color-muted); margin-top: 0.3rem; }
+.dot-ungelesen {
+  width: 0.5rem; height: 0.5rem; border-radius: 50%;
+  background: #2563eb; flex-shrink: 0; margin-top: 0.35rem;
 }
 </style>

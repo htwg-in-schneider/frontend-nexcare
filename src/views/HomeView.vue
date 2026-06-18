@@ -9,45 +9,22 @@ const mobileOpen = ref(false);
 
 // Kontakt-Modal
 const contactOpen = ref(false);
-const contactSending = ref(false);
-const contactSent = ref(false);
 const contact = ref({ name: '', email: '', message: '' });
-
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081';
 
 function openContact() {
   contactOpen.value = true;
-  contactSent.value = false;
   mobileOpen.value = false;
 }
 function closeContact() {
   contactOpen.value = false;
 }
-async function sendContact() {
-  if (!contact.value.name || !contact.value.email || !contact.value.message) return;
-  contactSending.value = true;
-  try {
-    await fetch(`${BASE}/api/contact`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        absenderEmail: contact.value.email,
-        betreff: 'NexCare Demo-Anfrage von ' + contact.value.name,
-        nachricht: `Name: ${contact.value.name}\n\n${contact.value.message}`,
-      }),
-    });
-    contactSent.value = true;
-    contact.value = { name: '', email: '', message: '' };
-    setTimeout(() => closeContact(), 2000);
-  } catch {
-    // fallback: mailto
-    const subject = encodeURIComponent('NexCare Demo-Anfrage von ' + contact.value.name);
-    const body = encodeURIComponent(`Name: ${contact.value.name}\nE-Mail: ${contact.value.email}\n\n${contact.value.message}`);
-    window.location.href = `mailto:info@nexcare.de?subject=${subject}&body=${body}`;
-    closeContact();
-  } finally {
-    contactSending.value = false;
-  }
+function sendContact() {
+  const subject = encodeURIComponent('NexCare Demo-Anfrage von ' + contact.value.name);
+  const body = encodeURIComponent(
+    `Name: ${contact.value.name}\nE-Mail: ${contact.value.email}\n\n${contact.value.message}`
+  );
+  window.location.href = `mailto:info@nexcare.de?subject=${subject}&body=${body}`;
+  closeContact();
 }
 
 // Karriere-Modal
@@ -431,12 +408,7 @@ function scrollTo(id) {
           <h3>Demo anfragen</h3>
           <button class="modal-close" @click="closeContact" aria-label="Schließen">✕</button>
         </div>
-        <div v-if="contactSent" style="padding:2rem;text-align:center;">
-          <p style="font-size:1.5rem;">✅</p>
-          <p style="font-weight:600;margin-top:.5rem;">Nachricht gesendet!</p>
-          <p style="color:#64748b;font-size:.9rem;">Wir melden uns in Kürze bei Ihnen.</p>
-        </div>
-        <form v-else class="modal-body" @submit.prevent="sendContact">
+        <form class="modal-body" @submit.prevent="sendContact">
           <div class="form-group">
             <label for="c-name">Name *</label>
             <input id="c-name" v-model="contact.name" type="text" placeholder="Max Mustermann" required />
@@ -451,9 +423,7 @@ function scrollTo(id) {
           </div>
           <div class="modal-foot">
             <button type="button" class="btn btn-ghost" @click="closeContact">Abbrechen</button>
-            <button type="submit" class="btn btn-primary" :disabled="contactSending">
-              {{ contactSending ? 'Wird gesendet …' : 'Anfrage senden' }}
-            </button>
+            <button type="submit" class="btn btn-primary">Anfrage senden</button>
           </div>
         </form>
       </div>

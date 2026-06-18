@@ -9,6 +9,9 @@ export const useUserStore = defineStore('user', {
   }),
   getters: {
     isAdmin: (state) => state.profile?.role === 'ADMIN',
+    isPatient: (state) => state.profile?.role === 'PATIENT',
+    isStaff: (state) => ['ARZT', 'KRANKENSCHWESTER', 'ADMIN'].includes(state.profile?.role),
+    patientId: (state) => state.profile?.patientId ?? null,
     isAuthenticated: (state) => state.profile !== null,
   },
   actions: {

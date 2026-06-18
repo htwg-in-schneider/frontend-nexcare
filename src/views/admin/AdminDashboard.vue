@@ -32,6 +32,13 @@ const router = useRouter()
         <span class="card-desc">Medikamentenkatalog pflegen und archivieren.</span>
         <span class="card-link">Öffnen <i class="bi bi-arrow-right"></i></span>
       </button>
+
+      <button class="admin-card" @click="router.push('/admin/einstellungen')">
+        <i class="bi bi-gear-fill"></i>
+        <span class="card-title">Einstellungen</span>
+        <span class="card-desc">Admin-E-Mail und System-Einstellungen verwalten.</span>
+        <span class="card-link">Öffnen <i class="bi bi-arrow-right"></i></span>
+      </button>
     </div>
   </main>
 </template>

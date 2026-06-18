@@ -35,6 +35,12 @@ const mainCards = computed(() => [
     desc: 'Eigene Kontaktdaten anzeigen und bearbeiten.',
     route: '/profile',
   },
+  {
+    icon: 'bi-clipboard2-check',
+    title: 'Aufnahmeanträge',
+    desc: 'Offene Patientenanträge prüfen und bestätigen.',
+    route: '/aufnahme-antraege',
+  },
 ])
 
 const adminCards = computed(() => {
@@ -57,6 +63,18 @@ const adminCards = computed(() => {
       title: 'Medikamentenverwaltung',
       desc: 'Medikamentenkatalog pflegen und archivieren.',
       route: '/admin/medikamente',
+    },
+    {
+      icon: 'bi-gear-fill',
+      title: 'Einstellungen',
+      desc: 'Admin-E-Mail und Systemkonfiguration verwalten.',
+      route: '/admin/einstellungen',
+    },
+    {
+      icon: 'bi-envelope-check',
+      title: 'E-Mail-Protokoll',
+      desc: 'Übersicht aller versendeten E-Mails und Status.',
+      route: '/admin/email-log',
     },
   ]
 })

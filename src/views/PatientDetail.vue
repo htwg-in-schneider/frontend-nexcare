@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue';
-import { fetchPatient, deletePatient } from '@/api/patients.js';
+import { fetchPatient, entlassenPatient } from '@/api/patients.js';
 import { useUiStore } from '@/stores/ui.js';
 import AppHeader from '@/components/AppHeader.vue';
 import Avatar from '@/components/Avatar.vue';
@@ -61,15 +61,15 @@ function showMedikamentenplan() {
 async function dischargePatient() {
   const ok = await ui.confirm({
     title: 'Patient entlassen',
-    message: `Patient ${patient.value.vorname} ${patient.value.nachname} wirklich entlassen?`,
+    message: `${patient.value.vorname} ${patient.value.nachname} als entlassen markieren?`,
     confirmLabel: 'Entlassen',
     cancelLabel: 'Abbrechen',
   });
   if (!ok) return;
   try {
-    await deletePatient(props.id);
+    const updated = await entlassenPatient(props.id);
+    patient.value = updated;
     ui.showToast('Patient wurde entlassen.');
-    router.push({ name: 'patient-list' });
   } catch (err) {
     ui.showToast(`Fehler beim Entlassen: ${err.message ?? err}`, { variant: 'error' });
   }
@@ -215,9 +215,15 @@ async function dischargePatient() {
 
 .action-buttons {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   gap: 0.625rem;
   margin-top: 1.25rem;
+}
+.action-buttons > * { flex: 1; min-width: 10rem; }
+@media (max-width: 30em) {
+  .action-buttons { flex-direction: column; }
+  .action-buttons > * { min-width: unset; }
 }
 
 .state-message {

@@ -8,7 +8,7 @@ import { useUiStore } from '@/stores/ui.js'
 const { user: auth0User } = useAuth0()
 const ui = useUiStore()
 
-const profile = ref({ name: '', email: '', adresse: '', role: '' })
+const profile = ref({ name: '', email: '', adresse: '', role: '', kontaktEmail: '' })
 const loading = ref(true)
 const saving = ref(false)
 const error = ref(null)
@@ -34,7 +34,11 @@ async function save() {
   }
   saving.value = true
   try {
-    const updated = await updateProfile({ name: profile.value.name.trim(), adresse: profile.value.adresse })
+    const updated = await updateProfile({
+      name: profile.value.name.trim(),
+      adresse: profile.value.adresse,
+      kontaktEmail: profile.value.kontaktEmail || null,
+    })
     profile.value = { ...updated }
     ui.showToast('Profil gespeichert.', { variant: 'success' })
   } catch {
@@ -71,6 +75,20 @@ async function save() {
           <label>
             <span>Adresse</span>
             <input v-model="profile.adresse" type="text" placeholder="Musterstraße 1, 78462 Konstanz" />
+          </label>
+
+          <label>
+            <span>Kontakt-E-Mail <small style="color:var(--color-muted);font-weight:400;">(für Benachrichtigungen)</small></span>
+            <input
+              v-model="profile.kontaktEmail"
+              type="email"
+              title="E-Mail-Adresse für Benachrichtigungen wie Zahlungsbestätigungen (optional)"
+              placeholder="kontakt@beispiel.de"
+              maxlength="150"
+            />
+            <span style="font-size:.78rem;color:var(--color-muted);margin-top:.15rem;">
+              An diese Adresse werden z.B. Zahlungsbestätigungen gesendet.
+            </span>
           </label>
 
           <label>

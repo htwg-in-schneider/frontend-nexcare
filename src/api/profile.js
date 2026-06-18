@@ -9,6 +9,13 @@ export async function fetchProfile() {
   return res.json()
 }
 
+export async function fetchMeinPatient() {
+  const opts = await authHeaders()
+  const res = await fetch(`${BASE_URL}/api/profile/mein-patient`, opts)
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return res.json()
+}
+
 export async function updateProfile(data) {
   const opts = await authHeaders()
   const res = await fetch(`${BASE_URL}/api/profile`, {

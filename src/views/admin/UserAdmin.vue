@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { useUiStore } from '@/stores/ui.js'
 import { fetchUsers, updateUser } from '@/api/admin.js'
@@ -9,8 +9,9 @@ const ui = useUiStore()
 const users = ref([])
 const search = ref('')
 const loading = ref(false)
-const modal = ref(null) // null | { id, name, adresse, role, email }
+const modal = ref(null)
 const saving = ref(false)
+const canSave = computed(() => modal.value && modal.value.name.trim())
 
 async function load() {
   loading.value = true
@@ -27,19 +28,24 @@ const filtered = () =>
   )
 
 function openEdit(u) {
-  modal.value = { id: u.id, name: u.name ?? '', adresse: u.adresse ?? '', role: u.role ?? 'PATIENT', email: u.email }
+  modal.value = { id: u.id, name: u.name ?? '', adresse: u.adresse ?? '', role: u.role ?? 'PATIENT', email: u.email, patientId: u.patientId ?? '' }
 }
 
 function closeModal() { modal.value = null }
 
 async function saveModal() {
-  if (!modal.value.name.trim()) {
-    ui.showToast('Name darf nicht leer sein.', { variant: 'error' })
+  if (!canSave.value) {
+    ui.showToast('Bitte alle Pflichtfelder ausfüllen.', { variant: 'error' })
     return
   }
   saving.value = true
   try {
-    await updateUser(modal.value.id, { name: modal.value.name.trim(), adresse: modal.value.adresse, role: modal.value.role })
+    await updateUser(modal.value.id, {
+      name: modal.value.name.trim(),
+      adresse: modal.value.adresse,
+      role: modal.value.role,
+      patientId: modal.value.patientId !== '' ? Number(modal.value.patientId) : null,
+    })
     ui.showToast('Benutzer gespeichert.', { variant: 'success' })
     closeModal()
     await load()
@@ -112,12 +118,12 @@ function roleLabel(role) {
             <input :value="modal.email" type="email" disabled />
           </label>
           <label>
-            <span>Name *</span>
-            <input v-model.trim="modal.name" type="text" required />
+            <span>Name<span class="required-mark">*</span></span>
+            <input v-model.trim="modal.name" type="text" title="Vollständiger Name (Pflichtfeld, maximal 150 Zeichen)" maxlength="150" />
           </label>
           <label>
             <span>Adresse</span>
-            <input v-model.trim="modal.adresse" type="text" placeholder="Musterstraße 1, 78462 Konstanz" />
+            <input v-model.trim="modal.adresse" type="text" title="Wohnanschrift (optional, maximal 250 Zeichen)" placeholder="Musterstraße 1, 78462 Konstanz" maxlength="250" />
           </label>
           <label>
             <span>Rolle</span>
@@ -128,10 +134,14 @@ function roleLabel(role) {
               <option value="ADMIN">Admin</option>
             </select>
           </label>
+          <label v-if="modal.role === 'PATIENT'">
+            <span>Patienten-ID <small>(verknüpft Patientenportal)</small></span>
+            <input v-model="modal.patientId" type="number" min="1" placeholder="z.B. 3" />
+          </label>
         </div>
         <div class="modal-foot">
           <button class="app-btn app-btn-secondary" @click="closeModal" :disabled="saving">Abbrechen</button>
-          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving">
+          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving || !canSave">
             {{ saving ? 'Speichern …' : 'Speichern' }}
           </button>
         </div>

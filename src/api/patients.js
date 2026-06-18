@@ -65,13 +65,15 @@ export async function fetchPatients(params = {}) {
   if (params.status) qs.set('status', unmapStatus(params.status))
   if (params.klinikum) qs.set('klinikum', params.klinikum)
   const url = `${BASE_URL}/api/patient${qs.toString() ? '?' + qs.toString() : ''}`
-  const res = await fetch(url)
+  const opts = await authHeaders()
+  const res = await fetch(url, opts)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return (await res.json()).map(mapPatient)
 }
 
 export async function fetchPatient(id) {
-  const res = await fetch(`${BASE_URL}/api/patient/${id}`)
+  const opts = await authHeaders()
+  const res = await fetch(`${BASE_URL}/api/patient/${id}`, opts)
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
   return mapPatient(await res.json())
 }
@@ -102,4 +104,11 @@ export async function deletePatient(id) {
   const opts = await authHeaders()
   const res = await fetch(`${BASE_URL}/api/patient/${id}`, { method: 'DELETE', ...opts })
   if (!res.ok) throw new Error(`HTTP ${res.status}`)
+}
+
+export async function entlassenPatient(id) {
+  const opts = await authHeaders()
+  const res = await fetch(`${BASE_URL}/api/patient/${id}/entlassen`, { method: 'PATCH', ...opts })
+  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  return res.json()
 }

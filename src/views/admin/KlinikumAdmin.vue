@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { useUiStore } from '@/stores/ui.js'
 import { fetchKlinika, createKlinikum, updateKlinikum, deleteKlinikum } from '@/api/klinika.js'
@@ -11,9 +11,9 @@ const search = ref('')
 const loading = ref(false)
 const searchTimer = ref(null)
 
-// Modal-State
-const modal = ref(null) // null | { id: Long|null, name: '', ort: '' }
+const modal = ref(null)
 const saving = ref(false)
+const canSave = computed(() => modal.value && modal.value.name.trim() && modal.value.ort.trim())
 
 async function load(name = '') {
   loading.value = true
@@ -27,19 +27,13 @@ function onSearch() {
   searchTimer.value = setTimeout(() => load(search.value), 250)
 }
 
-function openCreate() {
-  modal.value = { id: null, name: '', ort: '' }
-}
-
-function openEdit(k) {
-  modal.value = { id: k.id, name: k.name, ort: k.ort }
-}
-
+function openCreate() { modal.value = { id: null, name: '', ort: '' } }
+function openEdit(k) { modal.value = { id: k.id, name: k.name, ort: k.ort } }
 function closeModal() { modal.value = null }
 
 async function saveModal() {
-  if (!modal.value.name.trim() || !modal.value.ort.trim()) {
-    ui.showToast('Name und Ort sind Pflichtfelder.', { variant: 'error' })
+  if (!canSave.value) {
+    ui.showToast('Bitte alle Pflichtfelder ausfüllen.', { variant: 'error' })
     return
   }
   saving.value = true
@@ -59,6 +53,7 @@ async function saveModal() {
     saving.value = false
   }
 }
+
 
 async function remove(k) {
   const ok = await ui.confirm({
@@ -130,17 +125,17 @@ async function remove(k) {
         </div>
         <div class="modal-body">
           <label>
-            <span>Name *</span>
-            <input v-model.trim="modal.name" type="text" required placeholder="Klinikum Konstanz" />
+            <span>Name<span class="required-mark">*</span></span>
+            <input v-model.trim="modal.name" type="text" title="Name des Klinikums (Pflichtfeld, maximal 150 Zeichen)" placeholder="Klinikum Konstanz" maxlength="150" />
           </label>
           <label>
-            <span>Ort *</span>
-            <input v-model.trim="modal.ort" type="text" required placeholder="Konstanz" />
+            <span>Ort<span class="required-mark">*</span></span>
+            <input v-model.trim="modal.ort" type="text" title="Ort des Klinikums (Pflichtfeld, maximal 150 Zeichen)" placeholder="Konstanz" maxlength="150" />
           </label>
         </div>
         <div class="modal-foot">
           <button class="app-btn app-btn-secondary" @click="closeModal" :disabled="saving">Abbrechen</button>
-          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving">
+          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving || !canSave">
             {{ saving ? 'Speichern …' : 'Speichern' }}
           </button>
         </div>

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { useUiStore } from '@/stores/ui.js'
 import { fetchMedikamente, createMedikament, updateMedikament, archiviereMedikament } from '@/api/medikamente.js'
@@ -8,8 +8,9 @@ const ui = useUiStore()
 const medikamente = ref([])
 const search = ref('')
 const loading = ref(false)
-const modal = ref(null) // null | { id?, name, wirkstoff, beschreibung, dosiereinheit }
+const modal = ref(null)
 const saving = ref(false)
+const canSave = computed(() => modal.value && modal.value.name.trim() && modal.value.wirkstoff.trim())
 
 async function load() {
   loading.value = true
@@ -25,19 +26,13 @@ const filtered = () =>
     m.wirkstoff?.toLowerCase().includes(search.value.toLowerCase())
   )
 
-function openCreate() {
-  modal.value = { name: '', wirkstoff: '', beschreibung: '', dosiereinheit: '' }
-}
-
-function openEdit(m) {
-  modal.value = { id: m.id, name: m.name, wirkstoff: m.wirkstoff, beschreibung: m.beschreibung ?? '', dosiereinheit: m.dosiereinheit ?? '' }
-}
-
+function openCreate() { modal.value = { name: '', wirkstoff: '', beschreibung: '', dosiereinheit: '' } }
+function openEdit(m) { modal.value = { id: m.id, name: m.name, wirkstoff: m.wirkstoff, beschreibung: m.beschreibung ?? '', dosiereinheit: m.dosiereinheit ?? '' } }
 function closeModal() { modal.value = null }
 
 async function saveModal() {
-  if (!modal.value.name.trim() || !modal.value.wirkstoff.trim()) {
-    ui.showToast('Name und Wirkstoff sind erforderlich.', { variant: 'error' })
+  if (!canSave.value) {
+    ui.showToast('Bitte alle Pflichtfelder ausfüllen.', { variant: 'error' })
     return
   }
   saving.value = true
@@ -117,14 +112,20 @@ async function onArchivieren(m) {
           <button class="close-btn" @click="closeModal" aria-label="Schließen">✕</button>
         </div>
         <div class="modal-body">
-          <label><span>Name *</span><input v-model.trim="modal.name" type="text" placeholder="Ibuprofen 400mg" /></label>
-          <label><span>Wirkstoff *</span><input v-model.trim="modal.wirkstoff" type="text" placeholder="Ibuprofen" /></label>
-          <label><span>Beschreibung</span><input v-model.trim="modal.beschreibung" type="text" placeholder="Kurze Beschreibung …" /></label>
-          <label><span>Dosiereinheit</span><input v-model.trim="modal.dosiereinheit" type="text" placeholder="mg / ml / Stk" /></label>
+          <label>
+            <span>Name<span class="required-mark">*</span></span>
+            <input v-model.trim="modal.name" type="text" title="Handelsname des Medikaments (Pflichtfeld, maximal 150 Zeichen)" placeholder="Ibuprofen 400mg" maxlength="150" />
+          </label>
+          <label>
+            <span>Wirkstoff<span class="required-mark">*</span></span>
+            <input v-model.trim="modal.wirkstoff" type="text" title="Wirkstoff des Medikaments (Pflichtfeld, maximal 150 Zeichen)" placeholder="Ibuprofen" maxlength="150" />
+          </label>
+          <label><span>Beschreibung</span><input v-model.trim="modal.beschreibung" type="text" title="Kurze Beschreibung (optional, maximal 500 Zeichen)" placeholder="Kurze Beschreibung …" maxlength="500" /></label>
+          <label><span>Dosiereinheit</span><input v-model.trim="modal.dosiereinheit" type="text" title="Einheit der Dosierung, z.B. mg, ml, Stk (optional, maximal 30 Zeichen)" placeholder="mg / ml / Stk" maxlength="30" /></label>
         </div>
         <div class="modal-foot">
           <button class="app-btn app-btn-secondary" @click="closeModal" :disabled="saving">Abbrechen</button>
-          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving">
+          <button class="app-btn app-btn-primary" @click="saveModal" :disabled="saving || !canSave">
             {{ saving ? 'Speichern …' : 'Speichern' }}
           </button>
         </div>

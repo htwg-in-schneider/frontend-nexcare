@@ -323,3 +323,26 @@ html, body {
 .app-btn-secondary:disabled { opacity: 0.6; cursor: not-allowed; }
 
 /* overlay/modal are already centered – no media query override needed */
+
+/* ── Form validation ────────────────────────────────────────────────────── */
+.input-error,
+input.input-error,
+select.input-error,
+textarea.input-error {
+  border-color: #dc2626 !important;
+  outline-color: #dc2626 !important;
+  background-color: #fff5f5 !important;
+}
+.field-error-msg {
+  font-size: 0.78rem;
+  color: #dc2626;
+  margin-top: 0.2rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+.required-mark {
+  color: #dc2626;
+  font-weight: 700;
+  margin-left: 0.15rem;
+}

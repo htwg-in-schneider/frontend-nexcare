@@ -43,7 +43,8 @@ function getInitials(p) {
 const geburtsdatumDe = computed(() => {
   const iso = patient.value?.geburtsdatum;
   if (!iso) return '–';
-  return new Intl.DateTimeFormat('de-DE').format(new Date(iso + 'T00:00:00Z'));
+  const [y, m, d] = iso.split('-').map(Number);
+  return new Intl.DateTimeFormat('de-DE').format(new Date(y, m - 1, d));
 });
 
 function goBack() {

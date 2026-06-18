@@ -1,4 +1,5 @@
 import { authHeaders } from './auth.js'
+import { throwApiError } from './apiError.js'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
 
@@ -67,14 +68,14 @@ export async function fetchPatients(params = {}) {
   const url = `${BASE_URL}/api/patient${qs.toString() ? '?' + qs.toString() : ''}`
   const opts = await authHeaders()
   const res = await fetch(url, opts)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
   return (await res.json()).map(mapPatient)
 }
 
 export async function fetchPatient(id) {
   const opts = await authHeaders()
   const res = await fetch(`${BASE_URL}/api/patient/${id}`, opts)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
   return mapPatient(await res.json())
 }
 
@@ -85,7 +86,7 @@ export async function createPatient(patient) {
     ...opts,
     body: JSON.stringify(mapToBackend(patient)),
   })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
   return mapPatient(await res.json())
 }
 
@@ -96,19 +97,19 @@ export async function updatePatient(id, patient) {
     ...opts,
     body: JSON.stringify(mapToBackend(patient)),
   })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
   return mapPatient(await res.json())
 }
 
 export async function deletePatient(id) {
   const opts = await authHeaders()
   const res = await fetch(`${BASE_URL}/api/patient/${id}`, { method: 'DELETE', ...opts })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
 }
 
 export async function entlassenPatient(id) {
   const opts = await authHeaders()
   const res = await fetch(`${BASE_URL}/api/patient/${id}/entlassen`, { method: 'PATCH', ...opts })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
+  if (!res.ok) await throwApiError(res)
   return res.json()
 }

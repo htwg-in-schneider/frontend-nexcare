@@ -345,6 +345,15 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
   <main class="mp-main">
     <p v-if="loading" class="state-msg">Lade …</p>
 
+    <div v-else-if="!loading && eintraege.length === 0" class="empty-state">
+      <i class="bi bi-capsule" style="font-size:3rem;color:var(--color-primary,#2563eb);opacity:.4"></i>
+      <h3>Noch kein Medikamentenplan</h3>
+      <p>Hier werden verschriebene Medikamente für diesen Patienten angezeigt.</p>
+      <button v-if="!userStore.isPatient" class="btn-add-first" @click="addOpen = true">
+        <i class="bi bi-plus-circle"></i> Erstes Medikament hinzufügen
+      </button>
+    </div>
+
     <template v-else>
       <!-- ── Toolbar ── -->
       <div class="cal-toolbar">
@@ -613,6 +622,19 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 
 /* ── Tag ── */
 .cal-day { padding: 1rem; display: flex; flex-direction: column; gap: 0.625rem; }
+.empty-state {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 0.75rem; text-align: center; padding: 4rem 1.5rem;
+}
+.empty-state h3 { margin: 0; font-size: 1.2rem; color: var(--color-text); }
+.empty-state p { margin: 0; color: var(--color-muted); font-size: 0.9rem; }
+.btn-add-first {
+  margin-top: 0.5rem; padding: 0.6rem 1.4rem;
+  background: var(--color-primary, #2563eb); color: #fff;
+  border: none; border-radius: 0.5rem; cursor: pointer;
+  font-size: 0.95rem; display: flex; align-items: center; gap: 0.4rem;
+}
+.btn-add-first:hover { opacity: 0.88; }
 .no-events { text-align: center; padding: 3rem 1rem; color: var(--color-muted); }
 .no-events i { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
 .day-event {

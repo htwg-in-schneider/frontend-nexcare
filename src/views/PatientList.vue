@@ -61,7 +61,15 @@ function addPatient() {
     <SearchBar v-model="searchQuery" placeholder="Patient suchen..." />
     <PatientFilter />
 
-    <p v-if="loading" class="state-message">Lade Patienten …</p>
+    <ul v-if="loading" class="patient-list skeleton-list" aria-hidden="true">
+      <li v-for="n in 5" :key="n" class="skeleton-card">
+        <div class="sk-avatar"></div>
+        <div class="sk-lines">
+          <div class="sk-line sk-name"></div>
+          <div class="sk-line sk-sub"></div>
+        </div>
+      </li>
+    </ul>
     <p v-else-if="error" class="state-message error">
       Patienten konnten nicht geladen werden: {{ error }}
     </p>
@@ -88,4 +96,25 @@ function addPatient() {
   margin-top: 2rem;
 }
 .state-message.error { color: #b3372e; }
+
+.skeleton-list { list-style: none; padding: 0; margin: 0.5rem 0; display: flex; flex-direction: column; gap: 0.625rem; }
+.skeleton-card {
+  display: flex; align-items: center; gap: 1rem;
+  background: var(--color-card); border-radius: var(--radius-card);
+  padding: 0.875rem 1rem; box-shadow: var(--shadow-card);
+}
+.sk-avatar { width: 2.5rem; height: 2.5rem; border-radius: 50%; flex-shrink: 0; }
+.sk-lines { flex: 1; display: flex; flex-direction: column; gap: 0.4rem; }
+.sk-line { height: 0.8rem; border-radius: 0.4rem; }
+.sk-name { width: 55%; }
+.sk-sub  { width: 35%; }
+.sk-avatar, .sk-line {
+  background: linear-gradient(90deg, var(--color-border, #e2e8f0) 25%, #f0f4f8 50%, var(--color-border, #e2e8f0) 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.4s infinite;
+}
+@keyframes shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
 </style>

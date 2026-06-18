@@ -1,7 +1,4 @@
-import { authHeaders } from './auth.js'
-import { throwApiError } from './apiError.js'
-
-const BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
+import { apiFetch } from './apiClient.js'
 
 function mapStatus(status) {
   if (status === 'STATIONAER') return 'Stationär'
@@ -65,51 +62,32 @@ export async function fetchPatients(params = {}) {
   if (params.name) qs.set('name', params.name)
   if (params.status) qs.set('status', unmapStatus(params.status))
   if (params.klinikum) qs.set('klinikum', params.klinikum)
-  const url = `${BASE_URL}/api/patient${qs.toString() ? '?' + qs.toString() : ''}`
-  const opts = await authHeaders()
-  const res = await fetch(url, opts)
-  if (!res.ok) await throwApiError(res)
-  return (await res.json()).map(mapPatient)
+  const query = qs.toString() ? `?${qs}` : ''
+  return (await apiFetch(`/api/patient${query}`)).map(mapPatient)
 }
 
 export async function fetchPatient(id) {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE_URL}/api/patient/${id}`, opts)
-  if (!res.ok) await throwApiError(res)
-  return mapPatient(await res.json())
+  return mapPatient(await apiFetch(`/api/patient/${id}`))
 }
 
 export async function createPatient(patient) {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE_URL}/api/patient`, {
+  return mapPatient(await apiFetch('/api/patient', {
     method: 'POST',
-    ...opts,
     body: JSON.stringify(mapToBackend(patient)),
-  })
-  if (!res.ok) await throwApiError(res)
-  return mapPatient(await res.json())
+  }))
 }
 
 export async function updatePatient(id, patient) {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE_URL}/api/patient/${id}`, {
+  return mapPatient(await apiFetch(`/api/patient/${id}`, {
     method: 'PUT',
-    ...opts,
     body: JSON.stringify(mapToBackend(patient)),
-  })
-  if (!res.ok) await throwApiError(res)
-  return mapPatient(await res.json())
+  }))
 }
 
 export async function deletePatient(id) {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE_URL}/api/patient/${id}`, { method: 'DELETE', ...opts })
-  if (!res.ok) await throwApiError(res)
+  await apiFetch(`/api/patient/${id}`, { method: 'DELETE' })
 }
 
 export async function entlassenPatient(id) {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE_URL}/api/patient/${id}/entlassen`, { method: 'PATCH', ...opts })
-  if (!res.ok) await throwApiError(res)
-  return res.json()
+  return apiFetch(`/api/patient/${id}/entlassen`, { method: 'PATCH' })
 }

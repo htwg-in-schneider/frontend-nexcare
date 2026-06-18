@@ -40,7 +40,11 @@ const showBottomNav = computed(() => !noNavRoutes.includes(route.name))
     <div class="splash-spinner"></div>
   </div>
   <template v-else>
-    <router-view />
+    <router-view v-slot="{ Component }">
+      <Transition name="page" mode="out-in">
+        <component :is="Component" :key="route.name" />
+      </Transition>
+    </router-view>
     <BottomNav v-if="showBottomNav" />
     <Toast />
     <ConfirmDialog />
@@ -78,5 +82,18 @@ const showBottomNav = computed(() => !noNavRoutes.includes(route.name))
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+.page-enter-active,
+.page-leave-active {
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(6px);
+}
+.page-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
 }
 </style>

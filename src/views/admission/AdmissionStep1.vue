@@ -1,5 +1,4 @@
 <script setup>
-import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useField } from 'vee-validate'
 import AppHeader from '@/components/AppHeader.vue'
@@ -30,13 +29,6 @@ const versicherungsnr= useField('versicherungsnr')
 const telefon        = useField('telefon')
 const email          = useField('email')
 const adresse        = useField('adresse')
-
-const canProceed = computed(() =>
-  vorname.value.value?.trim() &&
-  nachname.value.value?.trim() &&
-  geburtsdatum.value.value &&
-  versicherungsnr.value.value?.trim()
-)
 
 const onSubmit = handleSubmit(values => {
   admission.updatePatient({ ...values })
@@ -167,7 +159,7 @@ const onSubmit = handleSubmit(values => {
         </div>
       </fieldset>
 
-      <button type="submit" class="app-btn app-btn-primary" :disabled="!canProceed">
+      <button type="submit" class="app-btn app-btn-primary" :disabled="!meta.valid">
         Weiter <i class="bi bi-arrow-right"></i>
       </button>
     </form>

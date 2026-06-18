@@ -300,8 +300,8 @@ async function saveAdd() {
     ui.showToast('Medikament verschrieben.', { variant: 'success' })
     addOpen.value = false
     await load()
-  } catch {
-    ui.showToast('Fehler beim Speichern.', { variant: 'error' })
+  } catch (e) {
+    ui.showToast(`Fehler beim Speichern: ${e.message}`, { variant: 'error' })
   } finally {
     saving.value = false
   }

@@ -205,8 +205,10 @@ html, body {
 
 /* ---------- Bottom navigation (sticky on all viewports) ---------- */
 .bottom-nav {
-  position: sticky;
+  position: fixed;
   bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   background: #fff;
   border-top: var(--border-hair) solid var(--color-border);

@@ -54,7 +54,10 @@ export async function addMedikamentenEintrag(patientId, eintrag) {
   const res = await fetch(`${BASE}/api/patient/${patientId}/medikamentenplan`, {
     method: 'POST', ...opts, body: JSON.stringify(eintrag),
   })
-  if (!res.ok) throw new Error('Fehler beim Hinzufügen')
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}))
+    throw new Error(body.fehler ?? body.message ?? `HTTP ${res.status}`)
+  }
   return res.json()
 }
 

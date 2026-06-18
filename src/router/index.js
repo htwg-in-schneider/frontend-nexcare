@@ -13,6 +13,7 @@ import { useUserStore } from '@/stores/user.js'
 async function staffGuard(to, from, next) {
   await authGuard(to, from, next)
   const userStore = useUserStore()
+  if (!userStore.loaded) await userStore.loadProfile()
   if (userStore.profile && userStore.isPatient) {
     return next('/portal')
   }
@@ -23,6 +24,7 @@ async function staffGuard(to, from, next) {
 async function patientGuard(to, from, next) {
   await authGuard(to, from, next)
   const userStore = useUserStore()
+  if (!userStore.loaded) await userStore.loadProfile()
   if (userStore.profile && !userStore.isPatient) {
     return next('/dashboard')
   }
@@ -33,6 +35,7 @@ async function patientGuard(to, from, next) {
 async function adminGuard(to, from, next) {
   await authGuard(to, from, next)
   const userStore = useUserStore()
+  if (!userStore.loaded) await userStore.loadProfile()
   if (userStore.profile?.role === 'ADMIN') return next()
   if (userStore.isPatient) return next('/portal')
   return next('/dashboard')

@@ -98,6 +98,12 @@ function emptyForm() {
 // ─── Helpers ─────────────────────────────────────────────────────────────────
 const WOCHENTAGE = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO']
 const WOCHENTAG_LABELS = { MO: 'Mo', DI: 'Di', MI: 'Mi', DO: 'Do', FR: 'Fr', SA: 'Sa', SO: 'So' }
+const EINNAHME_SCHEMA = [
+  { label: 'Morgens',   uhr: '08:00' },
+  { label: 'Mittags',   uhr: '12:00' },
+  { label: 'Abends',    uhr: '18:00' },
+  { label: 'Zur Nacht', uhr: '22:00' },
+]
 const MONAT_NAMES = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni',
   'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
 const TAG_NAMES_FULL = ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag']
@@ -248,6 +254,16 @@ function waehlemedikament(m) {
 }
 
 // ─── Uhrzeiten ───────────────────────────────────────────────────────────────
+function toggleSchema(uhr) {
+  const idx = form.value.uhrzeiten.indexOf(uhr)
+  if (idx >= 0) {
+    if (form.value.uhrzeiten.length > 1) form.value.uhrzeiten.splice(idx, 1)
+  } else {
+    form.value.uhrzeiten.push(uhr)
+    form.value.uhrzeiten.sort()
+  }
+}
+
 function addUhrzeit() {
   form.value.uhrzeiten.push('12:00')
 }
@@ -557,6 +573,13 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
           <!-- Uhrzeiten -->
           <div class="form-section">
             <label class="form-label">Uhrzeiten *</label>
+            <div class="schema-btns">
+              <button v-for="s in EINNAHME_SCHEMA" :key="s.label" type="button"
+                :class="['schema-btn', form.uhrzeiten.includes(s.uhr) && 'schema-active']"
+                @click="toggleSchema(s.uhr)"
+                :title="s.uhr + ' Uhr'"
+              >{{ s.label }}</button>
+            </div>
             <div class="uhrzeiten-list">
               <div v-for="(_, i) in form.uhrzeiten" :key="i" class="uhrzeit-row">
                 <input v-model="form.uhrzeiten[i]" type="time" class="form-input time-input" />
@@ -767,6 +790,14 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .sel-change { font-size: 0.78rem; color: var(--color-muted); }
 
 /* Wochentage */
+.schema-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
+.schema-btn {
+  padding: 0.3rem 0.75rem; border-radius: 2rem; border: 0.0625rem solid var(--color-border);
+  background: var(--color-card); color: var(--color-text); font-size: 0.85rem; cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+}
+.schema-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.schema-active { background: var(--color-primary) !important; color: #fff !important; border-color: var(--color-primary) !important; }
 .weekday-grid { display: flex; gap: 0.35rem; flex-wrap: wrap; }
 .wd-btn {
   width: 2.25rem; height: 2.25rem; border-radius: 50%;

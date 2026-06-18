@@ -42,6 +42,7 @@ const newBettForm = ref({ bezeichnung: '' })
 // Zuweisung-Modal
 const assignModal = ref(null) // { bett }
 const assignPatientId = ref('')
+const assignSuche = ref('')
 
 const saving = ref(false)
 
@@ -193,6 +194,7 @@ async function onToggleGesperrt(bett) {
 function openAssign(bett) {
   assignModal.value = { bett }
   assignPatientId.value = ''
+  assignSuche.value = ''
 }
 
 async function submitAssign() {
@@ -230,6 +232,14 @@ const freiePatienten = computed(() => {
       .filter(b => b.patientId).map(b => b.patientId)
   )
   return allePatienten.value.filter(p => !belegtIds.has(p.id))
+})
+
+const freiePatienentenGefiltert = computed(() => {
+  const q = assignSuche.value.toLowerCase().trim()
+  if (!q) return freiePatienten.value
+  return freiePatienten.value.filter(p =>
+    `${p.vorname} ${p.nachname}`.toLowerCase().includes(q)
+  )
 })
 
 function goToPatient(id) {
@@ -459,15 +469,35 @@ const etagenDesc = computed(() => {
           <button class="close-btn" @click="assignModal = null">✕</button>
         </div>
         <div class="modal-body">
-          <label><span>Patient *</span>
-            <select v-model="assignPatientId" required>
-              <option value="">– Patient wählen –</option>
-              <option v-for="p in freiePatienten" :key="p.id" :value="p.id">
-                {{ p.vorname }} {{ p.nachname }}
-              </option>
-            </select>
-          </label>
-          <p v-if="!freiePatienten.length" class="hint-msg">Keine Patienten ohne Bett verfügbar.</p>
+          <div class="patient-search-group">
+            <span class="form-lbl">Patient *</span>
+            <div v-if="assignPatientId" class="sel-patient-chip" @click="assignPatientId = ''; assignSuche = ''">
+              <span>{{ freiePatienten.find(p => p.id === assignPatientId)?.vorname }} {{ freiePatienten.find(p => p.id === assignPatientId)?.nachname }}</span>
+              <span class="chip-clear">✕</span>
+            </div>
+            <template v-else>
+              <input
+                v-model="assignSuche"
+                type="search"
+                placeholder="Name suchen …"
+                class="assign-search-input"
+                autocomplete="off"
+              />
+              <ul v-if="freiePatienentenGefiltert.length" class="patient-suggest-list">
+                <li
+                  v-for="p in freiePatienentenGefiltert.slice(0, 8)"
+                  :key="p.id"
+                  class="patient-suggest-item"
+                  @click="assignPatientId = p.id; assignSuche = ''"
+                >
+                  {{ p.vorname }} {{ p.nachname }}
+                </li>
+              </ul>
+              <p v-else-if="assignSuche" class="hint-msg">Kein Patient gefunden.</p>
+              <p v-else-if="!freiePatienten.length" class="hint-msg">Keine Patienten ohne Bett verfügbar.</p>
+              <p v-else class="hint-msg">Tippe um zu suchen …</p>
+            </template>
+          </div>
         </div>
         <div class="modal-foot">
           <button class="app-btn app-btn-secondary" @click="assignModal = null" :disabled="saving">Abbrechen</button>
@@ -656,6 +686,31 @@ const etagenDesc = computed(() => {
 .add-floor-btn:hover { background: rgba(59,130,246,.05); border-color: var(--color-primary); }
 
 .hint-msg { font-size: 0.85rem; color: var(--color-muted); margin: 0; }
+.patient-search-group { display: flex; flex-direction: column; gap: 0.35rem; }
+.form-lbl { font-size: 0.85rem; font-weight: 600; color: var(--color-muted); }
+.assign-search-input {
+  padding: 0.6rem 0.75rem; border: 0.0625rem solid var(--color-border);
+  border-radius: 0.625rem; font-size: 0.95rem; font-family: inherit;
+  background: #fff; color: var(--color-text); width: 100%;
+}
+.assign-search-input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
+.patient-suggest-list {
+  list-style: none; margin: 0; padding: 0.25rem 0;
+  border: 0.0625rem solid var(--color-border); border-radius: 0.625rem;
+  background: var(--color-card); max-height: 12rem; overflow-y: auto;
+  box-shadow: var(--shadow-card);
+}
+.patient-suggest-item {
+  padding: 0.55rem 0.875rem; cursor: pointer; font-size: 0.95rem;
+  transition: background 0.12s;
+}
+.patient-suggest-item:hover { background: var(--color-hover, #f0f4ff); }
+.sel-patient-chip {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0.55rem 0.875rem; border-radius: 0.625rem;
+  background: var(--color-primary); color: #fff; cursor: pointer; font-size: 0.95rem;
+}
+.chip-clear { opacity: 0.75; font-size: 0.8rem; }
 </style>
 
 <style>

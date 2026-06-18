@@ -55,15 +55,15 @@ const p = admission.patient
         <div class="grid">
           <label>
             <span>Name</span>
-            <input v-model.trim="notfall.name" type="text" placeholder="Hans Schmidt" />
+            <input v-model.trim="notfall.name" type="text" title="Name des Notfallkontakts (optional)" placeholder="Hans Schmidt" maxlength="100" />
           </label>
           <label>
             <span>Beziehung</span>
-            <input v-model.trim="notfall.beziehung" type="text" placeholder="Ehepartner" />
+            <input v-model.trim="notfall.beziehung" type="text" title="Beziehung zum Patienten (optional)" placeholder="Ehepartner" maxlength="100" />
           </label>
           <label class="wide">
             <span>Telefon</span>
-            <input v-model.trim="notfall.telefon" type="tel" placeholder="+49 170 7654321" />
+            <input v-model.trim="notfall.telefon" type="tel" title="Telefonnummer des Notfallkontakts (optional)" placeholder="+49 170 7654321" maxlength="20" />
           </label>
         </div>
       </fieldset>

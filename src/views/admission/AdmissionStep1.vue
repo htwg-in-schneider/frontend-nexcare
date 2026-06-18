@@ -1,28 +1,47 @@
 <script setup>
-import { ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
+import { useForm, useField } from 'vee-validate'
 import AppHeader from '@/components/AppHeader.vue'
 import AdmissionStepper from '@/components/AdmissionStepper.vue'
 import { useAdmissionStore } from '@/stores/admission.js'
+import { patientStep1Schema } from '@/validation/schemas.js'
 
 const router = useRouter()
 const admission = useAdmissionStore()
 
-// Lokale Kopie der Felder dieses Schritts
-const form = ref({
-  vorname: admission.patient.vorname,
-  nachname: admission.patient.nachname,
-  geburtsdatum: admission.patient.geburtsdatum,
-  versicherungsnr: admission.patient.versicherungsnr,
-  telefon: admission.patient.telefon,
-  email: admission.patient.email,
-  adresse: admission.patient.adresse,
+const { handleSubmit, meta } = useForm({
+  validationSchema: patientStep1Schema,
+  initialValues: {
+    vorname:        admission.patient.vorname        ?? '',
+    nachname:       admission.patient.nachname       ?? '',
+    geburtsdatum:   admission.patient.geburtsdatum   ?? '',
+    versicherungsnr:admission.patient.versicherungsnr?? '',
+    telefon:        admission.patient.telefon        ?? '',
+    email:          admission.patient.email          ?? '',
+    adresse:        admission.patient.adresse        ?? '',
+  },
 })
 
-function next() {
-  admission.updatePatient({ ...form.value })
+const vorname        = useField('vorname')
+const nachname       = useField('nachname')
+const geburtsdatum   = useField('geburtsdatum')
+const versicherungsnr= useField('versicherungsnr')
+const telefon        = useField('telefon')
+const email          = useField('email')
+const adresse        = useField('adresse')
+
+const canProceed = computed(() =>
+  vorname.value.value?.trim() &&
+  nachname.value.value?.trim() &&
+  geburtsdatum.value.value &&
+  versicherungsnr.value.value?.trim()
+)
+
+const onSubmit = handleSubmit(values => {
+  admission.updatePatient({ ...values })
   router.push({ name: 'aufnahme-2' })
-}
+})
 </script>
 
 <template>
@@ -32,41 +51,123 @@ function next() {
   <main class="container">
     <h2 class="step-title">Persönliche Daten</h2>
 
-    <form class="admission-form" @submit.prevent="next">
+    <form class="admission-form" @submit.prevent="onSubmit" novalidate>
       <fieldset>
         <div class="grid">
+
           <label>
-            <span>Vorname *</span>
-            <input v-model.trim="form.vorname" type="text" required placeholder="Maria" />
+            <span>Vorname<span class="required-mark">*</span></span>
+            <input
+              v-model="vorname.value.value"
+              type="text"
+              title="Vorname des Patienten (Pflichtfeld, maximal 100 Zeichen)"
+              placeholder="Maria"
+              maxlength="100"
+              autocomplete="given-name"
+              :class="{ 'input-error': vorname.errorMessage.value }"
+            />
+            <span v-if="vorname.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ vorname.errorMessage.value }}
+            </span>
           </label>
+
           <label>
-            <span>Nachname *</span>
-            <input v-model.trim="form.nachname" type="text" required placeholder="Schmidt" />
+            <span>Nachname<span class="required-mark">*</span></span>
+            <input
+              v-model="nachname.value.value"
+              type="text"
+              title="Nachname des Patienten (Pflichtfeld, maximal 100 Zeichen)"
+              placeholder="Schmidt"
+              maxlength="100"
+              autocomplete="family-name"
+              :class="{ 'input-error': nachname.errorMessage.value }"
+            />
+            <span v-if="nachname.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ nachname.errorMessage.value }}
+            </span>
           </label>
+
           <label>
-            <span>Geburtsdatum *</span>
-            <input v-model="form.geburtsdatum" type="date" required />
+            <span>Geburtsdatum<span class="required-mark">*</span></span>
+            <input
+              v-model="geburtsdatum.value.value"
+              type="date"
+              title="Geburtsdatum (Pflichtfeld, muss in der Vergangenheit liegen)"
+              :max="new Date().toISOString().split('T')[0]"
+              :class="{ 'input-error': geburtsdatum.errorMessage.value }"
+            />
+            <span v-if="geburtsdatum.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ geburtsdatum.errorMessage.value }}
+            </span>
           </label>
+
           <label>
-            <span>Versicherungsnr. *</span>
-            <input v-model.trim="form.versicherungsnr" type="text" required placeholder="V-2025-001" />
+            <span>Versicherungsnr.<span class="required-mark">*</span></span>
+            <input
+              v-model="versicherungsnr.value.value"
+              type="text"
+              title="Versicherungsnummer (Pflichtfeld, 5–30 Zeichen)"
+              placeholder="V-2025-001"
+              minlength="5"
+              maxlength="30"
+              :class="{ 'input-error': versicherungsnr.errorMessage.value }"
+            />
+            <span v-if="versicherungsnr.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ versicherungsnr.errorMessage.value }}
+            </span>
           </label>
+
           <label>
             <span>Telefon</span>
-            <input v-model.trim="form.telefon" type="tel" placeholder="+49 170 1234567" />
+            <input
+              v-model="telefon.value.value"
+              type="tel"
+              title="Telefonnummer (optional) – nur Ziffern, +, Leerzeichen, Klammern, Bindestrich; maximal 20 Zeichen"
+              placeholder="+49 170 1234567"
+              maxlength="20"
+              :class="{ 'input-error': telefon.errorMessage.value }"
+            />
+            <span v-if="telefon.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ telefon.errorMessage.value }}
+            </span>
           </label>
+
           <label>
             <span>E-Mail</span>
-            <input v-model.trim="form.email" type="email" placeholder="patient@beispiel.de" />
+            <input
+              v-model="email.value.value"
+              type="email"
+              title="E-Mail-Adresse (optional) – Format: name@beispiel.de"
+              placeholder="patient@beispiel.de"
+              maxlength="150"
+              autocomplete="email"
+              :class="{ 'input-error': email.errorMessage.value }"
+            />
+            <span v-if="email.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ email.errorMessage.value }}
+            </span>
           </label>
+
           <label class="wide">
             <span>Adresse</span>
-            <input v-model.trim="form.adresse" type="text" placeholder="Musterstr. 12, 78462 Konstanz" />
+            <input
+              v-model="adresse.value.value"
+              type="text"
+              title="Wohnanschrift (optional, maximal 250 Zeichen)"
+              placeholder="Musterstr. 12, 78462 Konstanz"
+              maxlength="250"
+              autocomplete="street-address"
+              :class="{ 'input-error': adresse.errorMessage.value }"
+            />
+            <span v-if="adresse.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ adresse.errorMessage.value }}
+            </span>
           </label>
+
         </div>
       </fieldset>
 
-      <button type="submit" class="app-btn app-btn-primary">
+      <button type="submit" class="app-btn app-btn-primary" :disabled="!canProceed">
         Weiter <i class="bi bi-arrow-right"></i>
       </button>
     </form>
@@ -76,52 +177,21 @@ function next() {
 <style scoped>
 .container { padding: 1rem 1rem 6rem; max-width: 42rem; margin: 0 auto; }
 .step-title { font-size: 1.125rem; font-weight: 700; margin: 1rem 0 0.75rem; color: var(--color-text); }
-
 .admission-form { display: flex; flex-direction: column; gap: 1rem; }
-
-fieldset {
-  border: 0;
-  background: var(--color-card);
-  border-radius: var(--radius-card);
-  box-shadow: var(--shadow-card);
-  padding: 1rem 1.25rem 1.25rem;
-  margin: 0;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
-  gap: 0.875rem 1rem;
-}
+fieldset { border: 0; background: var(--color-card); border-radius: var(--radius-card); box-shadow: var(--shadow-card); padding: 1rem 1.25rem 1.25rem; margin: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 0.875rem 1rem; }
 .wide { grid-column: 1 / -1; }
-
 label { display: flex; flex-direction: column; gap: 0.25rem; }
-label > span { font-size: 0.85rem; color: var(--color-muted); }
-
+label > span { font-size: 0.85rem; color: var(--color-muted); font-weight: 500; }
 input {
   padding: 0.625rem 0.75rem;
   border: 0.0625rem solid var(--color-border);
   border-radius: 0.625rem;
-  font-size: 0.95rem;
-  color: var(--color-text);
-  font-family: inherit;
-  background: #fff;
+  font-size: 0.95rem; color: var(--color-text); font-family: inherit; background: #fff;
 }
 input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
-
-.app-btn {
-  width: 100%;
-  padding: 0.875rem 1.25rem;
-  border: 0;
-  border-radius: var(--radius-card);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-}
+.app-btn { width: 100%; padding: 0.875rem 1.25rem; border: 0; border-radius: var(--radius-card); font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 .app-btn-primary { background: var(--color-primary); color: #fff; }
-.app-btn-primary:hover { background: var(--color-primary-dark); }
+.app-btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+.app-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 </style>

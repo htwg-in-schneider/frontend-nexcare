@@ -13,23 +13,21 @@ const router = useRouter()
 const { isAuthenticated, isLoading, getAccessTokenSilently } = useAuth0()
 const userStore = useUserStore()
 
-// Provide token getter to API layer
 setTokenGetter(getAccessTokenSilently)
 
-// Load backend profile whenever auth state changes; redirect to patients after login
 watch(isAuthenticated, async (loggedIn) => {
   if (loggedIn) {
     await userStore.loadProfile()
     const publicRoutes = ['home', 'impressum', 'datenschutz', null, undefined]
     if (publicRoutes.includes(route.name)) {
-      router.push({ name: 'dashboard' })
+      // Rollenbasierter Redirect: Patienten → /portal, Staff → /dashboard
+      router.push({ name: userStore.isPatient ? 'portal' : 'dashboard' })
     }
   } else {
     userStore.clear()
   }
 }, { immediate: true })
 
-// BottomNav nur in der App anzeigen, nicht auf Marketing-Seite und Impressum/Datenschutz
 const noNavRoutes = ['home', 'impressum', 'datenschutz']
 const showBottomNav = computed(() => !noNavRoutes.includes(route.name))
 </script>
@@ -40,11 +38,7 @@ const showBottomNav = computed(() => !noNavRoutes.includes(route.name))
     <div class="splash-spinner"></div>
   </div>
   <template v-else>
-    <router-view v-slot="{ Component }">
-      <Transition name="page" mode="out-in">
-        <component :is="Component" :key="route.name" />
-      </Transition>
-    </router-view>
+    <router-view />
     <BottomNav v-if="showBottomNav" />
     <Toast />
     <ConfirmDialog />
@@ -82,18 +76,5 @@ const showBottomNav = computed(() => !noNavRoutes.includes(route.name))
 
 @keyframes spin {
   to { transform: rotate(360deg); }
-}
-
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 0.18s ease, transform 0.18s ease;
-}
-.page-enter-from {
-  opacity: 0;
-  transform: translateY(6px);
-}
-.page-leave-to {
-  opacity: 0;
-  transform: translateY(-4px);
 }
 </style>

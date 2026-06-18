@@ -9,36 +9,36 @@ import ImpressumView from '@/views/ImpressumView.vue'
 import DatenschutzView from '@/views/DatenschutzView.vue'
 import { useUserStore } from '@/stores/user.js'
 
-/** Guard: only for staff (ARZT, KRANKENSCHWESTER, ADMIN). Patients are redirected to /portal. */
-async function staffGuard(to, from, next) {
-  await authGuard(to, from, next)
+/**
+ * Ensure the backend profile is loaded before checking roles.
+ * authGuard already confirmed the user is authenticated, so the
+ * token is available when we call loadProfile here.
+ */
+async function ensureProfile() {
   const userStore = useUserStore()
   if (!userStore.loaded) await userStore.loadProfile()
-  if (userStore.profile && userStore.isPatient) {
-    return next('/portal')
-  }
-  next()
+  return userStore
 }
 
-/** Guard: only for patients. Staff are redirected to /dashboard. */
-async function patientGuard(to, from, next) {
-  await authGuard(to, from, next)
-  const userStore = useUserStore()
-  if (!userStore.loaded) await userStore.loadProfile()
-  if (userStore.profile && !userStore.isPatient) {
-    return next('/dashboard')
-  }
-  next()
-}
-
-/** Guard: only for admin. Non-admins are redirected. */
-async function adminGuard(to, from, next) {
-  await authGuard(to, from, next)
-  const userStore = useUserStore()
-  if (!userStore.loaded) await userStore.loadProfile()
-  if (userStore.profile?.role === 'ADMIN') return next()
+/** Role guard: only staff (ARZT, KRANKENSCHWESTER, ADMIN). */
+async function staffRoleGuard(to, from, next) {
+  const userStore = await ensureProfile()
   if (userStore.isPatient) return next('/portal')
-  return next('/dashboard')
+  next()
+}
+
+/** Role guard: only patients. */
+async function patientRoleGuard(to, from, next) {
+  const userStore = await ensureProfile()
+  if (!userStore.isPatient) return next('/dashboard')
+  next()
+}
+
+/** Role guard: only admin. */
+async function adminRoleGuard(to, from, next) {
+  const userStore = await ensureProfile()
+  if (userStore.profile?.role === 'ADMIN') return next()
+  return next(userStore.isPatient ? '/portal' : '/dashboard')
 }
 
 const routes = [
@@ -49,7 +49,7 @@ const routes = [
     path: '/dashboard',
     name: 'dashboard',
     component: DashboardView,
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
 
   // Patientenportal (nur für Patienten)
@@ -57,13 +57,13 @@ const routes = [
     path: '/portal',
     name: 'portal',
     component: () => import('@/views/PatientenPortalView.vue'),
-    beforeEnter: patientGuard,
+    beforeEnter: [authGuard, patientRoleGuard],
   },
   {
     path: '/mein-medikamentenplan',
     name: 'mein-medikamentenplan',
     component: () => import('@/views/MeinMedikamentenplanView.vue'),
-    beforeEnter: patientGuard,
+    beforeEnter: [authGuard, patientRoleGuard],
   },
 
   // Patientenliste & -verwaltung (nur Staff)
@@ -71,21 +71,21 @@ const routes = [
     path: '/patients',
     name: 'patient-list',
     component: PatientList,
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
   {
     path: '/patient/view/:id',
     name: 'patient-detail',
     component: PatientDetail,
     props: (route) => ({ id: Number(route.params.id) }),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
   {
     path: '/patient/edit/:id',
     name: 'patient-edit',
     component: EditPatient,
     props: (route) => ({ id: Number(route.params.id) }),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
 
   // Multi-Step Aufnahme (nur Staff)
@@ -93,28 +93,28 @@ const routes = [
     path: '/aufnahme/1',
     name: 'aufnahme-1',
     component: () => import('@/views/admission/AdmissionStep1.vue'),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
   {
     path: '/aufnahme/2',
     name: 'aufnahme-2',
     component: () => import('@/views/admission/AdmissionStep2.vue'),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
   {
     path: '/aufnahme/3',
     name: 'aufnahme-3',
     component: () => import('@/views/admission/AdmissionStep3.vue'),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
 
-  // Medikamentenplan (Staff: verwaltend; Patient: eigener Plan über /mein-medikamentenplan)
+  // Medikamentenplan (Staff)
   {
     path: '/patient/:patientId/medikamentenplan',
     name: 'medikamentenplan',
     component: () => import('@/views/MedikamentenplanView.vue'),
     props: (route) => ({ patientId: Number(route.params.patientId) }),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
 
   // Bettenverwaltung (nur Staff)
@@ -122,7 +122,7 @@ const routes = [
     path: '/betten',
     name: 'betten',
     component: () => import('@/views/BettenView.vue'),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
 
   // Benutzerprofil (alle eingeloggten Nutzer)
@@ -133,7 +133,7 @@ const routes = [
     beforeEnter: authGuard,
   },
 
-  // Admin-Bereich (kein separates Admin-Dashboard)
+  // Admin-Bereich
   {
     path: '/admin',
     redirect: '/dashboard',
@@ -142,37 +142,37 @@ const routes = [
     path: '/admin/klinika',
     name: 'admin-klinika',
     component: () => import('@/views/admin/KlinikumAdmin.vue'),
-    beforeEnter: adminGuard,
+    beforeEnter: [authGuard, adminRoleGuard],
   },
   {
     path: '/admin/users',
     name: 'admin-users',
     component: () => import('@/views/admin/UserAdmin.vue'),
-    beforeEnter: adminGuard,
+    beforeEnter: [authGuard, adminRoleGuard],
   },
   {
     path: '/admin/medikamente',
     name: 'admin-medikamente',
     component: () => import('@/views/admin/MedikamentAdmin.vue'),
-    beforeEnter: adminGuard,
+    beforeEnter: [authGuard, adminRoleGuard],
   },
   {
     path: '/admin/einstellungen',
     name: 'admin-einstellungen',
     component: () => import('@/views/admin/EinstellungenAdmin.vue'),
-    beforeEnter: adminGuard,
+    beforeEnter: [authGuard, adminRoleGuard],
   },
   {
     path: '/admin/email-log',
     name: 'admin-email-log',
     component: () => import('@/views/admin/EmailLogAdmin.vue'),
-    beforeEnter: adminGuard,
+    beforeEnter: [authGuard, adminRoleGuard],
   },
   {
     path: '/aufnahme-antraege',
     name: 'aufnahme-antraege',
     component: () => import('@/views/AufnahmeAntraegeView.vue'),
-    beforeEnter: staffGuard,
+    beforeEnter: [authGuard, staffRoleGuard],
   },
   {
     path: '/registrierung-info',

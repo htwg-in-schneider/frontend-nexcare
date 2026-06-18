@@ -157,18 +157,6 @@ const routes = [
     beforeEnter: [authGuard, adminRoleGuard],
   },
   {
-    path: '/admin/einstellungen',
-    name: 'admin-einstellungen',
-    component: () => import('@/views/admin/EinstellungenAdmin.vue'),
-    beforeEnter: [authGuard, adminRoleGuard],
-  },
-  {
-    path: '/admin/email-log',
-    name: 'admin-email-log',
-    component: () => import('@/views/admin/EmailLogAdmin.vue'),
-    beforeEnter: [authGuard, adminRoleGuard],
-  },
-  {
     path: '/aufnahme-antraege',
     name: 'aufnahme-antraege',
     component: () => import('@/views/AufnahmeAntraegeView.vue'),

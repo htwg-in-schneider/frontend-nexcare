@@ -6,7 +6,6 @@ import { useUserStore } from '@/stores/user.js'
 import { fetchMeinPatient } from '@/api/profile.js'
 import { fetchMedikamentenplan } from '@/api/medikamente.js'
 import { fetchEigenanteil, bezahlen } from '@/api/zahlung.js'
-import { sendContact } from '@/api/contact.js'
 import { fetchMeinAntrag, submitAntrag } from '@/api/aufnahmeAntrag.js'
 import { fetchKlinika } from '@/api/klinika.js'
 import { authHeaders } from '@/api/auth.js'
@@ -130,23 +129,13 @@ const kontakt = ref({ absenderEmail: '', betreff: '', nachricht: '' })
 const kontaktSenden = ref(false)
 const kontaktErgebnis = ref(null) // 'gesendet' | 'fehler'
 
-async function onKontaktSenden() {
-  if (!kontakt.value.absenderEmail.trim() || !kontakt.value.betreff.trim() || !kontakt.value.nachricht.trim()) return
-  kontaktSenden.value = true
-  kontaktErgebnis.value = null
-  try {
-    await sendContact({
-      absenderEmail: kontakt.value.absenderEmail.trim(),
-      betreff: kontakt.value.betreff.trim(),
-      nachricht: kontakt.value.nachricht.trim(),
-    })
-    kontaktErgebnis.value = 'gesendet'
-    kontakt.value = { absenderEmail: '', betreff: '', nachricht: '' }
-  } catch {
-    kontaktErgebnis.value = 'fehler'
-  } finally {
-    kontaktSenden.value = false
-  }
+function onKontaktSenden() {
+  const to = 'kontakt@nexcare.de'
+  const subject = encodeURIComponent(kontakt.value.betreff.trim())
+  const body = encodeURIComponent(kontakt.value.nachricht.trim())
+  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`
+  kontaktErgebnis.value = 'gesendet'
+  kontakt.value = { absenderEmail: '', betreff: '', nachricht: '' }
 }
 
 // ─── Nachrichten ─────────────────────────────────────────────────────────────

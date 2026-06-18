@@ -5,8 +5,6 @@ import AppHeader from '@/components/AppHeader.vue'
 import { useUiStore } from '@/stores/ui.js'
 import { useUserStore } from '@/stores/user.js'
 import { useFormValidation } from '@/composables/useFormValidation.js'
-import { authHeaders } from '@/api/auth.js'
-
 import {
   fetchMedikamentenplan,
   addMedikamentenEintrag,
@@ -15,44 +13,10 @@ import {
 } from '@/api/medikamente.js'
 import { fetchPatient } from '@/api/patients.js'
 
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
-
 const props = defineProps({ patientId: { type: Number, required: true } })
 const router = useRouter()
 const ui = useUiStore()
 const userStore = useUserStore()
-
-const sendingPlan = ref(false)
-
-async function sendPlan() {
-  if (!eintraege.value.length) {
-    ui.showToast('Kein Medikamentenplan vorhanden.', { variant: 'warning' })
-    return
-  }
-  const ok = await ui.confirm({
-    title: 'Medikamentenplan per E-Mail senden',
-    message: `Den aktuellen Medikamentenplan mit .ics-Kalenderanhang an die hinterlegte Kontakt-E-Mail von ${patient.value?.vorname ?? ''} ${patient.value?.nachname ?? ''} senden?`,
-    confirmLabel: 'Senden',
-    cancelLabel: 'Abbrechen',
-  })
-  if (!ok) return
-  sendingPlan.value = true
-  try {
-    const opts = await authHeaders()
-    const res = await fetch(`${BASE}/api/patient/${props.patientId}/medikamentenplan/senden`, {
-      method: 'POST', ...opts,
-    })
-    if (res.ok) {
-      ui.showToast('Medikamentenplan wurde per E-Mail gesendet.', { variant: 'success' })
-    } else {
-      const body = await res.json().catch(() => ({}))
-      ui.showToast(body.error ?? 'Fehler beim Senden. Kontakt-E-Mail gesetzt?', { variant: 'error' })
-    }
-  } catch {
-    ui.showToast('Netzwerkfehler beim Senden.', { variant: 'error' })
-  }
-  sendingPlan.value = false
-}
 
 // ─── Data ───────────────────────────────────────────────────────────────────
 const patient = ref(null)
@@ -489,15 +453,6 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
         </ul>
       </div>
 
-      <!-- ── Plan per E-Mail senden (nur Staff) ── -->
-      <div v-if="!userStore.isPatient && eintraege.length" class="send-plan-bar">
-        <button class="send-plan-btn" :disabled="sendingPlan" @click="sendPlan"
-          title="Medikamentenplan mit Kalenderanhang an die Kontakt-E-Mail des Patienten senden">
-          <i class="bi bi-send"></i>
-          {{ sendingPlan ? 'Wird gesendet …' : 'Plan per E-Mail senden' }}
-        </button>
-      </div>
-
       <!-- ── FAB ── -->
       <button v-if="!userStore.isPatient" class="fab" aria-label="Medikament verschreiben" @click="openAdd">
         <i class="bi bi-plus-lg"></i>
@@ -727,23 +682,6 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .legend-range { font-size: 0.75rem; color: var(--color-muted); }
 .del-btn { background: none; border: none; color: var(--color-muted); cursor: pointer; padding: 0.2rem; font-size: 0.9rem; border-radius: 0.375rem; flex-shrink: 0; }
 .del-btn:hover { color: #b3372e; background: #fdf0ef; }
-
-/* ── Send-Plan bar ── */
-.send-plan-bar {
-  display: flex; justify-content: flex-end; margin-top: .75rem; padding-bottom: .25rem;
-}
-.send-plan-btn {
-  display: inline-flex; align-items: center; gap: .4rem;
-  background: color-mix(in srgb, var(--color-primary) 10%, transparent);
-  color: var(--color-primary);
-  border: .0625rem solid color-mix(in srgb, var(--color-primary) 30%, transparent);
-  border-radius: .625rem;
-  padding: .55rem 1.1rem;
-  font-size: .85rem; font-weight: 600; cursor: pointer; font-family: inherit;
-  transition: background .15s;
-}
-.send-plan-btn:hover:not(:disabled) { background: color-mix(in srgb, var(--color-primary) 18%, transparent); }
-.send-plan-btn:disabled { opacity: .6; cursor: not-allowed; }
 
 /* ── FAB ── */
 .fab {

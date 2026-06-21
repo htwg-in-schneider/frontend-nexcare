@@ -219,8 +219,8 @@ html, body {
 .bottom-nav .nav-inner {
   display: flex;
   width: 100%;
-  justify-content: center;
-  gap: clamp(1.5rem, 8%, 4rem);
+  justify-content: space-around;
+  padding: 0 0.25rem;
 }
 /* Item visuals live in components/BottomNavItem.vue */
 

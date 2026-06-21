@@ -696,7 +696,7 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 
 /* ── Modal form ── */
 .form-section { display: flex; flex-direction: column; gap: 0.35rem; }
-.form-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text); }
+.form-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text); display: block !important; flex-direction: unset !important; }
 .form-input {
   padding: 0.5rem 0.75rem;
   border: 0.0625rem solid var(--color-border);

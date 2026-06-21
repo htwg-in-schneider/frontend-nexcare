@@ -65,7 +65,7 @@ const naechsteEinnahme = computed(() => {
 // ─── Eigenanteil / Zahlung ───────────────────────────────────────────────────
 const eigenanteil = ref(null)
 const zahlungLaeuft = ref(false)
-const zahlungErgebnis = ref(null) // null | { status, betrag, referenzNr, emailGesendet }
+const zahlungErgebnis = ref(null) // null | { status, betrag, referenzNr }
 const zahlungFehler = ref(false)
 
 async function ladeEigenanteil() {
@@ -224,8 +224,8 @@ onMounted(load)
 
       <!-- ── Status-Banner ── -->
       <div v-if="patient" class="status-banner" :class="patient.status?.toLowerCase()">
-        <i class="bi" :class="patient.status === 'AUFGENOMMEN' ? 'bi-hospital-fill' : patient.status === 'ENTLASSEN' ? 'bi-house-check-fill' : 'bi-clock-history'"></i>
-        <span>{{ patient.status === 'AUFGENOMMEN' ? 'Stationär aufgenommen' : patient.status === 'ENTLASSEN' ? 'Entlassen' : patient.status ?? 'Unbekannt' }}</span>
+        <i class="bi" :class="patient.status === 'STATIONAER' ? 'bi-hospital-fill' : patient.status === 'ENTLASSEN' ? 'bi-house-check-fill' : 'bi-clock-history'"></i>
+        <span>{{ patient.status === 'STATIONAER' ? 'Stationär aufgenommen' : patient.status === 'ENTLASSEN' ? 'Entlassen' : patient.status ?? 'Unbekannt' }}</span>
       </div>
 
       <!-- ── Nachrichten ── -->
@@ -410,10 +410,6 @@ onMounted(load)
                 <dt>Betrag</dt>
                 <dd>{{ zahlungErgebnis.betrag?.toFixed(2) }} €</dd>
               </div>
-              <div class="info-row" v-if="zahlungErgebnis.emailGesendet">
-                <dt>Bestätigung</dt>
-                <dd>E-Mail wurde gesendet</dd>
-              </div>
             </dl>
           </template>
 
@@ -438,8 +434,8 @@ onMounted(load)
               {{ zahlungLaeuft ? 'Wird verarbeitet …' : `${eigenanteil.betrag?.toFixed(2)} € jetzt bezahlen` }}
             </button>
             <p class="zahlung-hint">
-              <i class="bi bi-envelope-at"></i>
-              Ist eine Kontakt-E-Mail in deinem Profil hinterlegt, erhältst du eine Zahlungsbestätigung per E-Mail.
+              <i class="bi bi-info-circle"></i>
+              Nach der Zahlung erhältst du eine Bestätigung in deinen Nachrichten.
             </p>
           </template>
         </div>
@@ -550,9 +546,9 @@ onMounted(load)
   margin-bottom: 1rem;
   width: fit-content;
 }
-.status-banner.aufgenommen { background: #edfaf4; color: #1b6b40; }
+.status-banner.stationaer { background: #edfaf4; color: #1b6b40; }
 .status-banner.entlassen { background: #edf4ff; color: #1b4f8a; }
-.status-banner:not(.aufgenommen):not(.entlassen) { background: var(--color-surface); color: var(--color-muted); }
+.status-banner:not(.stationaer):not(.entlassen) { background: var(--color-surface); color: var(--color-muted); }
 
 .cards { display: flex; flex-direction: column; gap: 1rem; }
 

@@ -38,7 +38,6 @@ const form = ref(emptyForm())
 const { submitted, invalid, validate, reset } = useFormValidation()
 const canSaveForm = computed(() =>
   form.value.medikamentId &&
-  form.value.dosierung.trim() &&
   form.value.wochentage.length > 0 &&
   form.value.startDatum &&
   form.value.endDatum &&
@@ -214,7 +213,7 @@ const katalogGefiltert = computed(() =>
 function waehlemedikament(m) {
   form.value.medikamentId = m.id
   form.value.medikamentName = m.name
-  if (m.dosiereinheit) form.value.dosierung = m.dosiereinheit
+  form.value.dosierung = m.dosiereinheit || m.name
   katalogSuche.value = ''
 }
 
@@ -257,7 +256,6 @@ function openAdd() {
 async function saveAdd() {
   const ok = validate([
     { check: !form.value.medikamentId },
-    { check: !form.value.dosierung.trim() },
     { check: !form.value.wochentage.length },
     { check: !form.value.startDatum },
     { check: !form.value.endDatum },
@@ -488,9 +486,9 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
                 class="form-input"
                 autocomplete="off"
               />
-              <ul v-if="katalogGefiltert.length" class="kat-list">
+              <ul v-if="katalogSuche && katalogGefiltert.length" class="kat-list">
                 <li
-                  v-for="m in katalogGefiltert.slice(0, 8)"
+                  v-for="m in katalogGefiltert.slice(0, 20)"
                   :key="m.id"
                   class="kat-item"
                   @click="waehlemedikament(m)"
@@ -498,17 +496,13 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
                   <span class="kat-name">{{ m.name }}</span>
                   <span class="kat-wirkstoff">{{ m.wirkstoff }}</span>
                 </li>
+                <li v-if="katalogGefiltert.length > 20" class="kat-item hint-item">
+                  {{ katalogGefiltert.length - 20 }} weitere — Suche eingrenzen
+                </li>
               </ul>
               <p v-else-if="katalogSuche" class="hint">Kein Medikament gefunden.</p>
               <p v-else class="hint">Tippe um zu suchen …</p>
             </template>
-          </div>
-
-          <!-- Dosierung -->
-          <div class="form-section">
-            <label class="form-label">Dosierung<span class="required-mark">*</span></label>
-            <input v-model.trim="form.dosierung" type="text" title="Dosierungsangabe, z.B. 500 mg oder 2 Tabletten (Pflichtfeld, maximal 100 Zeichen)" :class="['form-input', { 'input-error': invalid(!form.dosierung.trim()) }]" placeholder="z.B. 500 mg" maxlength="100" />
-            <span v-if="invalid(!form.dosierung.trim())" class="field-error-msg"><i class="bi bi-exclamation-circle"></i> Dosierung ist erforderlich</span>
           </div>
 
           <!-- Wochentage -->
@@ -719,6 +713,7 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .kat-name { font-size: 0.88rem; font-weight: 600; color: var(--color-text); }
 .kat-wirkstoff { font-size: 0.78rem; color: var(--color-muted); }
 .hint { font-size: 0.8rem; color: var(--color-muted); margin: 0.25rem 0 0; }
+.hint-item { font-size: 0.8rem; color: var(--color-muted); font-style: italic; cursor: default !important; justify-content: center; }
 .selected-med {
   display: flex; justify-content: space-between; align-items: center;
   padding: 0.5rem 0.75rem;

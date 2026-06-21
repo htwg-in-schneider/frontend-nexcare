@@ -89,5 +89,5 @@ export async function deletePatient(id) {
 }
 
 export async function entlassenPatient(id) {
-  return apiFetch(`/api/patient/${id}/entlassen`, { method: 'PATCH' })
+  return mapPatient(await apiFetch(`/api/patient/${id}/entlassen`, { method: 'PATCH' }))
 }

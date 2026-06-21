@@ -186,4 +186,7 @@ input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0
 .app-btn-primary { background: var(--color-primary); color: #fff; }
 .app-btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
 .app-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+.input-error { border-color: #ef4444 !important; }
+.field-error-msg { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; }
+.required-mark { color: #ef4444; margin-left: 0.15rem; }
 </style>

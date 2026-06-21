@@ -182,4 +182,7 @@ input:focus, select:focus { outline: 0.125rem solid var(--color-primary); outlin
 .app-btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
 .app-btn-secondary { background: var(--color-surface); color: var(--color-text); border: 0.0625rem solid var(--color-border); }
 .app-btn-secondary:hover { background: var(--color-card); }
+.input-error { border-color: #ef4444 !important; }
+.field-error-msg { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; }
+.required-mark { color: #ef4444; margin-left: 0.15rem; }
 </style>

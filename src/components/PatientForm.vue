@@ -62,7 +62,7 @@ onMounted(async () => {
           <input type="tel"
             title="Telefonnummer (optional) – nur Ziffern, +, Leerzeichen, Klammern, Bindestrich"
             placeholder="+49 170 1234567"
-            pattern="^[+0-9\s()\-]{0,20}$"
+            pattern="^[+0-9\s() -]{0,20}$"
             maxlength="20"
             :value="modelValue.telefon"
             @input="$emit('update:modelValue', { ...modelValue, telefon: $event.target.value })" />
@@ -161,7 +161,7 @@ onMounted(async () => {
         <label class="wide">
           <span>Telefon</span>
           <input type="tel" title="Telefon des Notfallkontakts (optional)" placeholder="+49 170 7654321"
-            pattern="^[+0-9\s()\-]{0,20}$" maxlength="20"
+            pattern="^[+0-9\s() -]{0,20}$" maxlength="20"
             :value="modelValue.notfallkontakt?.telefon"
             @input="$emit('update:modelValue', { ...modelValue, notfallkontakt: { ...modelValue.notfallkontakt, telefon: $event.target.value } })" />
         </label>

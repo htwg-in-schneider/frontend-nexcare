@@ -1,6 +1,6 @@
 import * as yup from 'yup'
 
-const TELEFON_REGEX = /^[+0-9\s()\-]{0,20}$/
+const TELEFON_REGEX = /^[+0-9\s() -]{0,20}$/
 const EMAIL_REGEX   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 export const patientStep1Schema = yup.object({

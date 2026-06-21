@@ -1,7 +1,7 @@
 import { apiFetch } from './apiClient.js'
 
 export async function fetchPatientenByKlinikum(klinikumId) {
-  return apiFetch(`/api/patient?klinikum=${klinikumId}`)
+  return apiFetch(`/api/betten/klinikum/${klinikumId}`)
 }
 
 export async function fetchBettStruktur(klinikumId) {

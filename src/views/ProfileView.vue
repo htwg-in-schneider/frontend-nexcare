@@ -10,7 +10,7 @@ const { user: auth0User } = useAuth0()
 const ui = useUiStore()
 const userStore = useUserStore()
 
-const profile = ref({ name: '', email: '', adresse: '', role: '', kontaktEmail: '' })
+const profile = ref({ name: '', email: '', adresse: '', role: '' })
 const loading = ref(true)
 const saving = ref(false)
 const error = ref(null)
@@ -39,7 +39,6 @@ async function save() {
     const updated = await updateProfile({
       name: profile.value.name.trim(),
       adresse: profile.value.adresse,
-      kontaktEmail: profile.value.kontaktEmail || null,
     })
     profile.value = { ...updated }
     ui.showToast('Profil gespeichert.', { variant: 'success' })

@@ -79,7 +79,7 @@ async function save() {
           </label>
 
 
-          <label>
+          <label v-if="userStore.isAdmin">
             <span>Rolle</span>
             <input :value="profile.role" type="text" disabled />
           </label>

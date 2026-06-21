@@ -76,7 +76,7 @@ const adminCards = computed(() => {
   <main class="container">
     <div class="greeting">
       <h2 class="hello">Guten Tag<span v-if="firstName">, {{ firstName }}</span>.</h2>
-      <p class="role-badge">{{ userStore.profile?.role ?? '–' }}</p>
+      <p v-if="userStore.isAdmin" class="role-badge">{{ userStore.profile?.role ?? '–' }}</p>
     </div>
 
     <div class="card-grid">

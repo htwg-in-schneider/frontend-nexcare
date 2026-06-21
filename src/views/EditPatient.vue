@@ -87,7 +87,7 @@ function onBack() {
 </template>
 
 <style scoped>
-.detail-container { padding-top: 1rem; padding-bottom: 1.5rem; }
+.detail-container { padding-top: 1rem; padding-bottom: 6rem; }
 .state-message { text-align: center; color: var(--color-muted); margin-top: 2rem; }
 .state-message.error { color: #b3372e; }
 .app-btn {

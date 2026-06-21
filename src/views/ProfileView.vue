@@ -79,19 +79,6 @@ async function save() {
             <input v-model="profile.adresse" type="text" placeholder="Musterstraße 1, 78462 Konstanz" />
           </label>
 
-          <label>
-            <span>Kontakt-E-Mail <small style="color:var(--color-muted);font-weight:400;">(für Benachrichtigungen)</small></span>
-            <input
-              v-model="profile.kontaktEmail"
-              type="email"
-              title="E-Mail-Adresse für Benachrichtigungen wie Zahlungsbestätigungen (optional)"
-              placeholder="kontakt@beispiel.de"
-              maxlength="150"
-            />
-            <span style="font-size:.78rem;color:var(--color-muted);margin-top:.15rem;">
-              An diese Adresse werden z.B. Zahlungsbestätigungen gesendet.
-            </span>
-          </label>
 
           <label>
             <span>Rolle</span>

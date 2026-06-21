@@ -5,7 +5,6 @@ import AppHeader from '@/components/AppHeader.vue'
 import { useUserStore } from '@/stores/user.js'
 import { fetchMeinPatient } from '@/api/profile.js'
 import { fetchMedikamentenplan } from '@/api/medikamente.js'
-import { fetchEigenanteil, bezahlen } from '@/api/zahlung.js'
 import { fetchMeinAntrag, submitAntrag } from '@/api/aufnahmeAntrag.js'
 import { fetchKlinika } from '@/api/klinika.js'
 import { apiFetch } from '@/api/apiClient.js'
@@ -61,31 +60,6 @@ const naechsteEinnahme = computed(() => {
   const heute = heutigeEinnahmen.value.find(e => e.uhr > nowStr)
   return heute ?? null
 })
-
-// ─── Eigenanteil / Zahlung ───────────────────────────────────────────────────
-const eigenanteil = ref(null)
-const zahlungLaeuft = ref(false)
-const zahlungErgebnis = ref(null) // null | { status, betrag, referenzNr }
-const zahlungFehler = ref(false)
-
-async function ladeEigenanteil() {
-  try { eigenanteil.value = await fetchEigenanteil() } catch { /* ignorieren */ }
-}
-
-async function onBezahlen() {
-  const ok = confirm(`Eigenanteil von ${eigenanteil.value?.betrag?.toFixed(2)} € jetzt bezahlen?`)
-  if (!ok) return
-  zahlungLaeuft.value = true
-  zahlungFehler.value = false
-  try {
-    zahlungErgebnis.value = await bezahlen()
-    eigenanteil.value = { ...eigenanteil.value, bezahlt: true }
-  } catch {
-    zahlungFehler.value = true
-  } finally {
-    zahlungLaeuft.value = false
-  }
-}
 
 // ─── Aufnahme-Antrag ─────────────────────────────────────────────────────────
 const klinika = ref([])
@@ -190,7 +164,6 @@ async function load() {
     patient.value = await fetchMeinPatient()
     if (patient.value?.id) {
       eintraege.value = await fetchMedikamentenplan(patient.value.id)
-      await ladeEigenanteil()
       await ladeAntragDaten()
       await ladeNachrichten(patient.value.id)
     }
@@ -389,57 +362,6 @@ onMounted(load)
           </dl>
         </div>
 
-        <!-- ── Eigenanteil / Zahlung ── -->
-        <div v-if="eigenanteil" class="card zahlung-card" :class="{ 'bezahlt': eigenanteil.bezahlt }">
-          <div class="card-head">
-            <i class="bi bi-credit-card-fill card-icon" :class="eigenanteil.bezahlt ? 'green' : 'amber'"></i>
-            <h3>Krankenhausaufenthalt – Eigenanteil</h3>
-          </div>
-
-          <template v-if="eigenanteil.bezahlt || zahlungErgebnis?.status === 'bezahlt'">
-            <div class="zahlung-success">
-              <i class="bi bi-check-circle-fill"></i>
-              <span>Eigenanteil bezahlt</span>
-            </div>
-            <dl class="info-list" v-if="zahlungErgebnis?.referenzNr">
-              <div class="info-row">
-                <dt>Referenznr.</dt>
-                <dd>{{ zahlungErgebnis.referenzNr }}</dd>
-              </div>
-              <div class="info-row">
-                <dt>Betrag</dt>
-                <dd>{{ zahlungErgebnis.betrag?.toFixed(2) }} €</dd>
-              </div>
-            </dl>
-          </template>
-
-          <template v-else>
-            <dl class="info-list">
-              <div class="info-row">
-                <dt>Aufnahme</dt>
-                <dd>{{ eigenanteil.aufnahmeDatum }}</dd>
-              </div>
-              <div class="info-row">
-                <dt>Aufenthaltstage</dt>
-                <dd>{{ eigenanteil.tage }} Tag(e) × 10,00 €</dd>
-              </div>
-              <div class="info-row">
-                <dt>Fälliger Betrag</dt>
-                <dd class="betrag-highlight">{{ eigenanteil.betrag?.toFixed(2) }} €</dd>
-              </div>
-            </dl>
-            <p v-if="zahlungFehler" class="zahlung-fehler"><i class="bi bi-exclamation-triangle"></i> Zahlung fehlgeschlagen. Bitte versuche es erneut.</p>
-            <button class="zahlung-btn" @click="onBezahlen" :disabled="zahlungLaeuft">
-              <i class="bi bi-lock-fill"></i>
-              {{ zahlungLaeuft ? 'Wird verarbeitet …' : `${eigenanteil.betrag?.toFixed(2)} € jetzt bezahlen` }}
-            </button>
-            <p class="zahlung-hint">
-              <i class="bi bi-info-circle"></i>
-              Nach der Zahlung erhältst du eine Bestätigung in deinen Nachrichten.
-            </p>
-          </template>
-        </div>
-
         <!-- ── Aufnahme beantragen (nur ohne aktive Aufnahme) ── -->
         <div v-if="!patient" class="card">
           <div class="card-head">
@@ -602,11 +524,8 @@ dd { font-size: 0.88rem; color: var(--color-text); margin: 0; font-weight: 500; 
 .next-name { font-size: 1rem; font-weight: 600; color: var(--color-text); }
 .next-dos { font-size: 0.85rem; color: var(--color-muted); }
 
-/* Zahlung */
 .card-icon.green { color: #059669; }
 .card-icon.blue { color: #2563eb; }
-.zahlung-card.bezahlt { border-color: #6ee7b7; background: #f0fdf9; }
-.betrag-highlight { font-size: 1.1rem; font-weight: 700; color: #d97706; }
 .zahlung-success {
   display: flex; align-items: center; gap: 0.5rem;
   color: #059669; font-weight: 600; font-size: 0.95rem;
@@ -624,7 +543,6 @@ dd { font-size: 0.88rem; color: var(--color-text); margin: 0; font-weight: 500; 
 }
 .zahlung-btn:hover:not(:disabled) { filter: brightness(1.08); }
 .zahlung-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.zahlung-hint { font-size: 0.78rem; color: var(--color-muted); margin: 0.5rem 0 0; display: flex; align-items: flex-start; gap: 0.35rem; }
 
 /* Kontaktformular */
 .kontakt-form { display: flex; flex-direction: column; gap: 0.75rem; }

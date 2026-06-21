@@ -137,7 +137,7 @@ async function dischargePatient() {
 <style scoped>
 .detail-container {
   padding-top: 1rem;
-  padding-bottom: 1.5rem;
+  padding-bottom: 6rem;
 }
 
 .patient-hero {

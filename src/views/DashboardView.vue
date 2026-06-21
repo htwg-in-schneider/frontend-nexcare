@@ -11,7 +11,9 @@ const userStore = useUserStore()
 
 const firstName = computed(() => {
   const name = userStore.profile?.name ?? user.value?.name ?? ''
-  return name.split(' ')[0]
+  const parts = name.split(' ')
+  if (parts[0]?.endsWith('.')) return parts.slice(0, 2).join(' ')
+  return parts[0]
 })
 
 const mainCards = computed(() => [

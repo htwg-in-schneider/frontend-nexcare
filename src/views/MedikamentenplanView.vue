@@ -214,6 +214,7 @@ const katalogGefiltert = computed(() =>
 function waehlemedikament(m) {
   form.value.medikamentId = m.id
   form.value.medikamentName = m.name
+  if (m.dosiereinheit) form.value.dosierung = m.dosiereinheit
   katalogSuche.value = ''
 }
 

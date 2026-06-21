@@ -461,108 +461,131 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 
   <!-- ── Add-Modal ── -->
   <Teleport to="body">
-    <div v-if="addOpen" class="overlay" @click.self="addOpen = false">
-      <div class="modal mp-modal" role="dialog" aria-modal="true">
-        <div class="modal-head">
-          <h3>Medikament verschreiben</h3>
-          <button class="close-btn" @click="addOpen = false" aria-label="Schließen">✕</button>
+    <div v-if="addOpen" class="rx-overlay" @click.self="addOpen = false">
+      <div class="rx-modal" role="dialog" aria-modal="true">
+
+        <!-- Header -->
+        <div class="rx-head">
+          <div>
+            <h3 class="rx-title">Medikament verschreiben</h3>
+            <p class="rx-subtitle">{{ patientName }}</p>
+          </div>
+          <button class="rx-close" @click="addOpen = false" aria-label="Schließen"><i class="bi bi-x-lg"></i></button>
         </div>
 
-        <div class="modal-body">
+        <div class="rx-body">
 
-          <!-- Medikament auswählen -->
-          <div class="form-section">
-            <label class="form-label">Medikament<span class="required-mark">*</span></label>
-            <span v-if="invalid(!form.medikamentId)" class="field-error-msg"><i class="bi bi-exclamation-circle"></i> Bitte ein Medikament auswählen</span>
-            <div v-if="form.medikamentId" class="selected-med" @click="form.medikamentId = null; form.medikamentName = ''">
-              <span class="sel-name">{{ form.medikamentName }}</span>
-              <span class="sel-change">ändern ✕</span>
+          <!-- 1. Medikament -->
+          <section class="rx-section">
+            <div class="rx-section-head">
+              <span class="rx-step">1</span>
+              <span class="rx-section-title">Medikament wählen</span>
+            </div>
+            <div v-if="form.medikamentId" class="rx-selected" @click="form.medikamentId = null; form.medikamentName = ''">
+              <i class="bi bi-capsule rx-sel-icon"></i>
+              <div class="rx-sel-info">
+                <span class="rx-sel-name">{{ form.medikamentName }}</span>
+                <span class="rx-sel-wirkstoff">{{ katalog.find(m => m.id === form.medikamentId)?.wirkstoff }}</span>
+              </div>
+              <span class="rx-sel-change"><i class="bi bi-x-circle"></i></span>
             </div>
             <template v-else>
-              <input
-                v-model="katalogSuche"
-                type="search"
-                placeholder="Medikament suchen …"
-                class="form-input"
-                autocomplete="off"
-              />
-              <ul v-if="katalogSuche && katalogGefiltert.length" class="kat-list">
+              <div class="rx-search-wrap">
+                <i class="bi bi-search rx-search-icon"></i>
+                <input
+                  v-model="katalogSuche"
+                  type="search"
+                  placeholder="Name oder Wirkstoff eingeben …"
+                  class="rx-search"
+                  autocomplete="off"
+                />
+              </div>
+              <ul v-if="katalogSuche && katalogGefiltert.length" class="rx-results">
                 <li
                   v-for="m in katalogGefiltert.slice(0, 20)"
                   :key="m.id"
-                  class="kat-item"
+                  class="rx-result"
                   @click="waehlemedikament(m)"
                 >
-                  <span class="kat-name">{{ m.name }}</span>
-                  <span class="kat-wirkstoff">{{ m.wirkstoff }}</span>
+                  <i class="bi bi-capsule rx-result-icon"></i>
+                  <div>
+                    <span class="rx-result-name">{{ m.name }}</span>
+                    <span class="rx-result-sub">{{ m.wirkstoff }}<template v-if="m.dosiereinheit"> · {{ m.dosiereinheit }}</template></span>
+                  </div>
                 </li>
-                <li v-if="katalogGefiltert.length > 20" class="kat-item hint-item">
-                  {{ katalogGefiltert.length - 20 }} weitere — Suche eingrenzen
+                <li v-if="katalogGefiltert.length > 20" class="rx-result rx-result-more">
+                  {{ katalogGefiltert.length - 20 }} weitere Treffer — Suche eingrenzen
                 </li>
               </ul>
-              <p v-else-if="katalogSuche" class="hint">Kein Medikament gefunden.</p>
-              <p v-else class="hint">Tippe um zu suchen …</p>
+              <p v-else-if="katalogSuche" class="rx-hint"><i class="bi bi-info-circle"></i> Kein Medikament gefunden.</p>
+              <p v-else class="rx-hint"><i class="bi bi-search"></i> Suche im Katalog mit {{ katalog.length }} Medikamenten</p>
             </template>
-          </div>
+            <span v-if="invalid(!form.medikamentId)" class="rx-error"><i class="bi bi-exclamation-circle"></i> Bitte ein Medikament auswählen</span>
+          </section>
 
-          <!-- Wochentage -->
-          <div class="form-section">
-            <label class="form-label">Wochentage<span class="required-mark">*</span></label>
-            <span v-if="invalid(!form.wochentage.length)" class="field-error-msg"><i class="bi bi-exclamation-circle"></i> Mindestens einen Wochentag auswählen</span>
-            <div class="weekday-grid">
-              <button
-                v-for="tag in WOCHENTAGE"
-                :key="tag"
-                type="button"
-                :class="['wd-btn', form.wochentage.includes(tag) && 'wd-active']"
-                @click="toggleWochentag(tag)"
-              >{{ WOCHENTAG_LABELS[tag] }}</button>
+          <!-- 2. Einnahme -->
+          <section class="rx-section">
+            <div class="rx-section-head">
+              <span class="rx-step">2</span>
+              <span class="rx-section-title">Einnahmeschema</span>
             </div>
-          </div>
 
-          <!-- Uhrzeiten -->
-          <div class="form-section">
-            <label class="form-label">Uhrzeiten *</label>
-            <div class="schema-btns">
-              <button v-for="s in EINNAHME_SCHEMA" :key="s.label" type="button"
-                :class="['schema-btn', form.uhrzeiten.includes(s.uhr) && 'schema-active']"
-                @click="toggleSchema(s.uhr)"
-                :title="s.uhr + ' Uhr'"
-              >{{ s.label }}</button>
+            <div class="rx-field">
+              <span class="rx-field-label">Wochentage</span>
+              <div class="rx-pills">
+                <button
+                  v-for="tag in WOCHENTAGE"
+                  :key="tag"
+                  type="button"
+                  :class="['rx-pill', form.wochentage.includes(tag) && 'rx-pill-on']"
+                  @click="toggleWochentag(tag)"
+                >{{ WOCHENTAG_LABELS[tag] }}</button>
+              </div>
+              <span v-if="invalid(!form.wochentage.length)" class="rx-error"><i class="bi bi-exclamation-circle"></i> Mindestens einen Tag</span>
             </div>
-            <div class="uhrzeiten-list">
-              <div v-for="(_, i) in form.uhrzeiten" :key="i" class="uhrzeit-row">
-                <input v-model="form.uhrzeiten[i]" type="time" class="form-input time-input" />
-                <button v-if="form.uhrzeiten.length > 1" type="button" class="remove-uhr" @click="removeUhrzeit(i)">
-                  <i class="bi bi-x"></i>
+
+            <div class="rx-field">
+              <span class="rx-field-label">Tageszeiten</span>
+              <div class="rx-schema-grid">
+                <button v-for="s in EINNAHME_SCHEMA" :key="s.label" type="button"
+                  :class="['rx-schema-card', form.uhrzeiten.includes(s.uhr) && 'rx-schema-on']"
+                  @click="toggleSchema(s.uhr)"
+                >
+                  <span class="rx-schema-label">{{ s.label }}</span>
+                  <span class="rx-schema-time">{{ s.uhr }}</span>
                 </button>
               </div>
             </div>
-            <button type="button" class="add-uhr-btn" @click="addUhrzeit">
-              <i class="bi bi-plus"></i> Uhrzeit hinzufügen
-            </button>
-          </div>
+          </section>
 
-          <!-- Start- und Enddatum -->
-          <div class="form-section form-row">
-            <div class="form-col">
-              <label class="form-label">Startdatum<span class="required-mark">*</span></label>
-              <input v-model="form.startDatum" type="date" title="Beginn der Verschreibung (Pflichtfeld)" :class="['form-input', { 'input-error': invalid(!form.startDatum) }]" />
-              <span v-if="invalid(!form.startDatum)" class="field-error-msg"><i class="bi bi-exclamation-circle"></i> Pflichtfeld</span>
+          <!-- 3. Zeitraum -->
+          <section class="rx-section">
+            <div class="rx-section-head">
+              <span class="rx-step">3</span>
+              <span class="rx-section-title">Zeitraum</span>
             </div>
-            <div class="form-col">
-              <label class="form-label">Enddatum<span class="required-mark">*</span></label>
-              <input v-model="form.endDatum" type="date" title="Ende der Verschreibung (Pflichtfeld, muss nach Startdatum liegen)" :class="['form-input', { 'input-error': invalid(!form.endDatum || form.endDatum < form.startDatum) }]" />
-              <span v-if="invalid(form.endDatum < form.startDatum)" class="field-error-msg"><i class="bi bi-exclamation-circle"></i> Muss nach Startdatum liegen</span>
+            <div class="rx-date-row">
+              <div class="rx-date-col">
+                <span class="rx-field-label">Von</span>
+                <input v-model="form.startDatum" type="date" :class="['rx-date-input', { 'rx-input-error': invalid(!form.startDatum) }]" />
+              </div>
+              <span class="rx-date-sep"><i class="bi bi-arrow-right"></i></span>
+              <div class="rx-date-col">
+                <span class="rx-field-label">Bis</span>
+                <input v-model="form.endDatum" type="date" :class="['rx-date-input', { 'rx-input-error': invalid(!form.endDatum || form.endDatum < form.startDatum) }]" />
+              </div>
             </div>
-          </div>
+            <span v-if="invalid(form.endDatum < form.startDatum)" class="rx-error"><i class="bi bi-exclamation-circle"></i> Enddatum muss nach Startdatum liegen</span>
+          </section>
 
         </div>
 
-        <div class="modal-foot">
-          <button class="app-btn app-btn-secondary" @click="addOpen = false" :disabled="saving">Abbrechen</button>
-          <button class="app-btn app-btn-primary" @click="saveAdd" :disabled="saving || !canSaveForm">
-            {{ saving ? 'Speichern …' : 'Verschreiben' }}
+        <!-- Footer -->
+        <div class="rx-foot">
+          <button class="rx-btn-cancel" @click="addOpen = false" :disabled="saving">Abbrechen</button>
+          <button class="rx-btn-submit" @click="saveAdd" :disabled="saving || !canSaveForm">
+            <i class="bi bi-check2-circle"></i>
+            {{ saving ? 'Wird gespeichert …' : 'Verschreiben' }}
           </button>
         </div>
       </div>
@@ -688,101 +711,114 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 }
 .fab:hover { filter: brightness(1.08); }
 
-/* ── Modal form ── */
-.form-section { display: flex; flex-direction: column; gap: 0.35rem; }
-.form-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text); display: block !important; flex-direction: unset !important; }
-.form-input {
-  padding: 0.5rem 0.75rem;
-  border: 0.0625rem solid var(--color-border);
-  border-radius: 0.5rem;
-  font-size: 0.9rem;
-  font-family: inherit;
-  background: #fff;
-  color: var(--color-text);
-  width: 100%;
-}
-.form-input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
-.form-row { flex-direction: row; gap: 0.75rem; }
-.form-col { flex: 1; display: flex; flex-direction: column; gap: 0.35rem; }
+/* ── Verschreibungs-Modal ── */
+.rx-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.45); display: flex; align-items: center; justify-content: center; z-index: 99999; padding: 1rem; }
+.rx-modal { background: #fff; border-radius: 1rem; width: 100%; max-width: 32rem; box-shadow: 0 8px 40px rgba(0,0,0,.25); max-height: 90vh; display: flex; flex-direction: column; }
+.rx-head { display: flex; align-items: flex-start; justify-content: space-between; padding: 1.25rem 1.5rem 1rem; }
+.rx-title { margin: 0; font-size: 1.1rem; font-weight: 700; color: var(--color-text); }
+.rx-subtitle { margin: 0.15rem 0 0; font-size: 0.82rem; color: var(--color-muted); }
+.rx-close { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--color-muted); padding: 0.35rem; border-radius: 0.5rem; }
+.rx-close:hover { background: var(--color-surface); }
 
-/* Katalog-Liste */
-.kat-list { list-style: none; padding: 0; margin: 0.25rem 0 0; border: 0.0625rem solid var(--color-border); border-radius: 0.5rem; overflow: hidden; max-height: 12rem; overflow-y: auto; }
-.kat-item { display: flex; justify-content: space-between; align-items: center; padding: 0.5rem 0.75rem; cursor: pointer; border-bottom: 0.0625rem solid var(--color-border); gap: 0.5rem; }
-.kat-item:last-child { border-bottom: none; }
-.kat-item:hover { background: var(--color-surface); }
-.kat-name { font-size: 0.88rem; font-weight: 600; color: var(--color-text); }
-.kat-wirkstoff { font-size: 0.78rem; color: var(--color-muted); }
-.hint { font-size: 0.8rem; color: var(--color-muted); margin: 0.25rem 0 0; }
-.hint-item { font-size: 0.8rem; color: var(--color-muted); font-style: italic; cursor: default !important; justify-content: center; }
-.selected-med {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 0.5rem 0.75rem;
-  background: #edf4ff; border: 0.0625rem solid #93c5fd; border-radius: 0.5rem;
-  cursor: pointer;
-}
-.sel-name { font-weight: 600; font-size: 0.9rem; color: #1b4f8a; }
-.sel-change { font-size: 0.78rem; color: var(--color-muted); }
+.rx-body { padding: 0 1.5rem 1rem; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 0.25rem; }
 
-/* Wochentage */
-.schema-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; margin-bottom: 0.5rem; }
-.schema-btn {
-  padding: 0.3rem 0.75rem; border-radius: 2rem; border: 0.0625rem solid var(--color-border);
-  background: var(--color-card); color: var(--color-text); font-size: 0.85rem; cursor: pointer;
-  transition: background 0.15s, color 0.15s, border-color 0.15s;
-}
-.schema-btn:hover { border-color: var(--color-primary); color: var(--color-primary); }
-.schema-active { background: var(--color-primary) !important; color: #fff !important; border-color: var(--color-primary) !important; }
-.weekday-grid { display: flex; gap: 0.35rem; flex-wrap: wrap; }
-.wd-btn {
-  width: 2.25rem; height: 2.25rem; border-radius: 50%;
-  border: 0.0625rem solid var(--color-border);
-  background: var(--color-surface);
-  font-size: 0.78rem; font-weight: 600; font-family: inherit;
+/* Sections */
+.rx-section { padding: 0.875rem 0; border-bottom: 0.0625rem solid var(--color-border); }
+.rx-section:last-child { border-bottom: none; }
+.rx-section-head { display: flex; align-items: center; gap: 0.625rem; margin-bottom: 0.75rem; }
+.rx-step { width: 1.5rem; height: 1.5rem; border-radius: 50%; background: var(--color-primary, #2563eb); color: #fff; font-size: 0.75rem; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.rx-section-title { font-size: 0.88rem; font-weight: 700; color: var(--color-text); }
+
+/* Search */
+.rx-search-wrap { position: relative; }
+.rx-search-icon { position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--color-muted); font-size: 0.9rem; pointer-events: none; }
+.rx-search { width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.25rem; border: 0.0625rem solid var(--color-border); border-radius: 0.625rem; font-size: 0.9rem; font-family: inherit; background: var(--color-surface, #f8fafc); color: var(--color-text); }
+.rx-search:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; background: #fff; }
+
+/* Results */
+.rx-results { list-style: none; padding: 0; margin: 0.375rem 0 0; border: 0.0625rem solid var(--color-border); border-radius: 0.625rem; overflow: hidden; max-height: 14rem; overflow-y: auto; }
+.rx-result { display: flex; align-items: center; gap: 0.625rem; padding: 0.5rem 0.75rem; cursor: pointer; border-bottom: 0.0625rem solid var(--color-border); transition: background 0.1s; }
+.rx-result:last-child { border-bottom: none; }
+.rx-result:hover { background: #edf4ff; }
+.rx-result-icon { color: var(--color-primary); font-size: 1rem; flex-shrink: 0; }
+.rx-result-name { font-size: 0.88rem; font-weight: 600; color: var(--color-text); display: block; }
+.rx-result-sub { font-size: 0.75rem; color: var(--color-muted); display: block; }
+.rx-result-more { justify-content: center; font-size: 0.78rem; color: var(--color-muted); font-style: italic; cursor: default; }
+.rx-result-more:hover { background: transparent; }
+
+/* Selected */
+.rx-selected { display: flex; align-items: center; gap: 0.75rem; padding: 0.75rem; background: #edf4ff; border: 0.0625rem solid #93c5fd; border-radius: 0.625rem; cursor: pointer; transition: background 0.12s; }
+.rx-selected:hover { background: #dbeafe; }
+.rx-sel-icon { font-size: 1.25rem; color: var(--color-primary); flex-shrink: 0; }
+.rx-sel-info { flex: 1; min-width: 0; }
+.rx-sel-name { font-size: 0.9rem; font-weight: 700; color: #1e40af; display: block; }
+.rx-sel-wirkstoff { font-size: 0.78rem; color: #3b82f6; display: block; }
+.rx-sel-change { color: #93c5fd; font-size: 1rem; flex-shrink: 0; }
+.rx-sel-change:hover { color: #3b82f6; }
+
+.rx-hint { font-size: 0.8rem; color: var(--color-muted); margin: 0.5rem 0 0; display: flex; align-items: center; gap: 0.35rem; }
+
+/* Fields */
+.rx-field { margin-top: 0.75rem; }
+.rx-field:first-of-type { margin-top: 0; }
+.rx-field-label { font-size: 0.78rem; font-weight: 600; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.04em; display: block; margin-bottom: 0.35rem; }
+
+/* Pills (Wochentage) */
+.rx-pills { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+.rx-pill {
+  width: 2.5rem; height: 2.5rem; border-radius: 50%;
+  border: 0.125rem solid var(--color-border); background: #fff;
+  font-size: 0.78rem; font-weight: 700; font-family: inherit;
   cursor: pointer; color: var(--color-muted);
+  transition: all 0.15s;
 }
-.wd-btn.wd-active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+.rx-pill:hover { border-color: var(--color-primary); color: var(--color-primary); }
+.rx-pill-on { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
 
-/* Uhrzeiten */
-.uhrzeiten-list { display: flex; flex-direction: column; gap: 0.35rem; }
-.uhrzeit-row { display: flex; align-items: center; gap: 0.5rem; }
-.time-input { flex: 1; }
-.remove-uhr { width: 2rem; height: 2rem; border-radius: 0.375rem; border: 0.0625rem solid var(--color-border); background: var(--color-surface); cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
-.remove-uhr:hover { background: #fdf0ef; border-color: #f5c2be; color: #b3372e; }
-.add-uhr-btn {
-  padding: 0.35rem 0.75rem; border-radius: 0.5rem;
-  border: 0.0625rem dashed var(--color-border);
-  background: none; font-size: 0.82rem; font-family: inherit;
-  cursor: pointer; color: var(--color-primary); align-self: flex-start;
+/* Schema cards (Tageszeiten) */
+.rx-schema-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.5rem; }
+@media (max-width: 28rem) { .rx-schema-grid { grid-template-columns: repeat(2, 1fr); } }
+.rx-schema-card {
+  display: flex; flex-direction: column; align-items: center; gap: 0.15rem;
+  padding: 0.625rem 0.5rem; border-radius: 0.625rem;
+  border: 0.125rem solid var(--color-border); background: #fff;
+  cursor: pointer; transition: all 0.15s; font-family: inherit;
 }
-.add-uhr-btn:hover { background: var(--color-surface); }
+.rx-schema-card:hover { border-color: var(--color-primary); }
+.rx-schema-on { background: var(--color-primary); border-color: var(--color-primary); }
+.rx-schema-label { font-size: 0.82rem; font-weight: 600; color: var(--color-text); }
+.rx-schema-time { font-size: 0.72rem; color: var(--color-muted); }
+.rx-schema-on .rx-schema-label, .rx-schema-on .rx-schema-time { color: #fff; }
 
-/* Validation */
-.input-error { border-color: #ef4444 !important; }
-.input-error:focus { outline-color: #ef4444 !important; }
-.field-error-msg { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; }
-.required-mark { color: #ef4444; margin-left: 0.15rem; }
+/* Dates */
+.rx-date-row { display: flex; align-items: flex-end; gap: 0.75rem; }
+.rx-date-col { flex: 1; }
+.rx-date-sep { color: var(--color-muted); margin-bottom: 0.5rem; }
+.rx-date-input {
+  width: 100%; padding: 0.55rem 0.625rem;
+  border: 0.0625rem solid var(--color-border); border-radius: 0.5rem;
+  font-size: 0.9rem; font-family: inherit; background: #fff; color: var(--color-text);
+}
+.rx-date-input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
+.rx-input-error { border-color: #ef4444 !important; }
 
-/* Buttons */
-.app-btn {
+/* Error */
+.rx-error { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; margin-top: 0.35rem; }
+
+/* Footer */
+.rx-foot { padding: 1rem 1.5rem; border-top: 0.0625rem solid var(--color-border); display: flex; justify-content: flex-end; gap: 0.5rem; }
+.rx-btn-cancel {
   padding: 0.6rem 1.25rem; border-radius: 0.5rem; border: none;
-  font-size: 0.9rem; font-weight: 600; font-family: inherit;
-  cursor: pointer; transition: opacity 0.15s;
+  background: var(--color-surface, #f1f5f9); color: var(--color-text);
+  font-size: 0.9rem; font-weight: 600; font-family: inherit; cursor: pointer;
 }
-.app-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.app-btn-primary { background: var(--color-primary, #2563eb); color: #fff; }
-.app-btn-primary:hover:not(:disabled) { opacity: 0.88; }
-.app-btn-secondary { background: var(--color-surface, #f1f5f9); color: var(--color-text); }
-.app-btn-secondary:hover:not(:disabled) { background: var(--color-border); }
-</style>
-
-<style>
-.overlay { position: fixed !important; inset: 0 !important; background: rgba(0,0,0,.5) !important; display: flex !important; align-items: center !important; justify-content: center !important; z-index: 99999 !important; padding: 1rem !important; }
-.modal { display: block !important; background: #fff !important; border-radius: 1rem !important; width: 100% !important; max-width: 38rem !important; box-shadow: 0 8px 40px rgba(0,0,0,.28) !important; max-height: 90vh !important; overflow-y: auto !important; }
-.mp-modal { max-width: 42rem !important; }
-.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 1.125rem 1.5rem; border-bottom: 0.0625rem solid var(--color-border); position: sticky; top: 0; background: #fff; z-index: 1; }
-.modal-head h3 { margin: 0; font-size: 1rem; }
-.modal-body { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.modal-foot { padding: 1rem 1.5rem; border-top: 0.0625rem solid var(--color-border); display: flex; justify-content: flex-end; gap: 0.5rem; position: sticky; bottom: 0; background: #fff; }
-.close-btn { background: none; border: none; font-size: 1.1rem; cursor: pointer; color: var(--color-muted); padding: 0.25rem; border-radius: 0.375rem; }
-.close-btn:hover { background: var(--color-surface); }
+.rx-btn-cancel:hover { background: var(--color-border); }
+.rx-btn-submit {
+  padding: 0.6rem 1.5rem; border-radius: 0.5rem; border: none;
+  background: var(--color-primary, #2563eb); color: #fff;
+  font-size: 0.9rem; font-weight: 600; font-family: inherit; cursor: pointer;
+  display: flex; align-items: center; gap: 0.4rem;
+}
+.rx-btn-submit:hover:not(:disabled) { filter: brightness(1.08); }
+.rx-btn-submit:disabled, .rx-btn-cancel:disabled { opacity: 0.45; cursor: not-allowed; }
 </style>

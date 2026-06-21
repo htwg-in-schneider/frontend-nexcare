@@ -171,6 +171,9 @@ const routes = [
   // Rechtliches
   { path: '/impressum', name: 'impressum', component: ImpressumView },
   { path: '/datenschutz', name: 'datenschutz', component: DatenschutzView },
+
+  // Catch-all → Homepage
+  { path: '/:pathMatch(.*)*', redirect: '/' },
 ]
 
 const router = createRouter({

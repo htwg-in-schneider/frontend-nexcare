@@ -4,9 +4,11 @@ import { useAuth0 } from '@auth0/auth0-vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { fetchProfile, updateProfile } from '@/api/profile.js'
 import { useUiStore } from '@/stores/ui.js'
+import { useUserStore } from '@/stores/user.js'
 
 const { user: auth0User } = useAuth0()
 const ui = useUiStore()
+const userStore = useUserStore()
 
 const profile = ref({ name: '', email: '', adresse: '', role: '', kontaktEmail: '' })
 const loading = ref(true)
@@ -50,7 +52,7 @@ async function save() {
 </script>
 
 <template>
-  <AppHeader title="Mein Profil" :show-back="true" back-route="/dashboard" />
+  <AppHeader title="Mein Profil" :show-back="true" :back-route="userStore.isPatient ? '/portal' : '/dashboard'" />
 
   <main class="container">
     <p v-if="loading" class="state-msg">Lade Profil …</p>

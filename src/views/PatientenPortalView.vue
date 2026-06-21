@@ -8,9 +8,7 @@ import { fetchMedikamentenplan } from '@/api/medikamente.js'
 import { fetchEigenanteil, bezahlen } from '@/api/zahlung.js'
 import { fetchMeinAntrag, submitAntrag } from '@/api/aufnahmeAntrag.js'
 import { fetchKlinika } from '@/api/klinika.js'
-import { authHeaders } from '@/api/auth.js'
-
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
+import { apiFetch } from '@/api/apiClient.js'
 
 const router = useRouter()
 const userStore = useUserStore()
@@ -125,17 +123,15 @@ async function onAntragSenden() {
 }
 
 // ─── Kontaktformular ─────────────────────────────────────────────────────────
-const kontakt = ref({ absenderEmail: '', betreff: '', nachricht: '' })
-const kontaktSenden = ref(false)
-const kontaktErgebnis = ref(null) // 'gesendet' | 'fehler'
+const kontakt = ref({ betreff: '', nachricht: '' })
+const kontaktErgebnis = ref(null)
 
 function onKontaktSenden() {
-  const to = 'kontakt@nexcare.de'
   const subject = encodeURIComponent(kontakt.value.betreff.trim())
   const body = encodeURIComponent(kontakt.value.nachricht.trim())
-  window.location.href = `mailto:${to}?subject=${subject}&body=${body}`
+  window.location.href = `mailto:kontakt@nexcare.de?subject=${subject}&body=${body}`
   kontaktErgebnis.value = 'gesendet'
-  kontakt.value = { absenderEmail: '', betreff: '', nachricht: '' }
+  kontakt.value = { betreff: '', nachricht: '' }
 }
 
 // ─── Nachrichten ─────────────────────────────────────────────────────────────
@@ -143,19 +139,14 @@ const nachrichten = ref([])
 
 async function ladeNachrichten(patientId) {
   try {
-    const opts = await authHeaders()
-    const res = await fetch(`${BASE}/api/patient/${patientId}/nachrichten`, opts)
-    if (res.ok) nachrichten.value = await res.json()
+    nachrichten.value = await apiFetch(`/api/patient/${patientId}/nachrichten`)
   } catch { /* ignorieren */ }
 }
 
 async function markiereGelesen(nachricht) {
   if (nachricht.gelesen) return
   try {
-    const opts = await authHeaders()
-    await fetch(`${BASE}/api/patient/${nachricht.patient.id}/nachrichten/${nachricht.id}/gelesen`, {
-      method: 'PATCH', ...opts,
-    })
+    await apiFetch(`/api/patient/${nachricht.patient.id}/nachrichten/${nachricht.id}/gelesen`, { method: 'PATCH' })
     nachricht.gelesen = true
   } catch { /* ignorieren */ }
 }
@@ -513,10 +504,6 @@ onMounted(load)
 
           <form v-if="kontaktErgebnis !== 'gesendet'" class="kontakt-form" @submit.prevent="onKontaktSenden" novalidate>
             <label>
-              <span>Deine E-Mail-Adresse<span class="required-mark">*</span></span>
-              <input v-model="kontakt.absenderEmail" type="email" title="Deine Rückmeldeadresse" placeholder="meine@email.de" maxlength="150" required />
-            </label>
-            <label>
               <span>Betreff<span class="required-mark">*</span></span>
               <input v-model="kontakt.betreff" type="text" title="Betreff der Nachricht" placeholder="Frage zu meinem Aufenthalt" maxlength="200" required />
             </label>
@@ -527,10 +514,10 @@ onMounted(load)
             <button
               type="submit"
               class="zahlung-btn"
-              :disabled="kontaktSenden || !kontakt.absenderEmail.trim() || !kontakt.betreff.trim() || !kontakt.nachricht.trim()"
+              :disabled="!kontakt.betreff.trim() || !kontakt.nachricht.trim()"
             >
-              <i class="bi bi-send-fill"></i>
-              {{ kontaktSenden ? 'Wird gesendet …' : 'Nachricht senden' }}
+              <i class="bi bi-envelope-fill"></i>
+              E-Mail-Programm öffnen
             </button>
           </form>
         </div>
@@ -648,12 +635,14 @@ dd { font-size: 0.88rem; color: var(--color-text); margin: 0; font-weight: 500; 
 .kontakt-form label { display: flex; flex-direction: column; gap: 0.25rem; }
 .kontakt-form label > span { font-size: 0.82rem; color: var(--color-muted); font-weight: 500; }
 .kontakt-form input,
-.kontakt-form textarea {
+.kontakt-form textarea,
+.kontakt-form select {
   padding: 0.5rem 0.75rem;
   border: 0.0625rem solid var(--color-border);
   border-radius: 0.625rem;
   font-size: 0.9rem; color: var(--color-text); font-family: inherit; background: #fff;
   resize: vertical;
+  width: 100%;
 }
 .kontakt-form input:focus,
 .kontakt-form textarea:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
@@ -691,4 +680,5 @@ dd { font-size: 0.88rem; color: var(--color-text); margin: 0; font-weight: 500; 
   width: 0.5rem; height: 0.5rem; border-radius: 50%;
   background: #2563eb; flex-shrink: 0; margin-top: 0.35rem;
 }
+.required-mark { color: #ef4444; margin-left: 0.15rem; }
 </style>

@@ -1,20 +1,9 @@
-import { authHeaders } from './auth.js'
-
-const BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8081'
+import { apiFetch } from './apiClient.js'
 
 export async function fetchEigenanteil() {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE}/api/portal/eigenanteil`, opts)
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+  return apiFetch('/api/portal/eigenanteil')
 }
 
 export async function bezahlen() {
-  const opts = await authHeaders()
-  const res = await fetch(`${BASE}/api/portal/zahlung`, {
-    method: 'POST',
-    ...opts,
-  })
-  if (!res.ok) throw new Error(`HTTP ${res.status}`)
-  return res.json()
+  return apiFetch('/api/portal/zahlung', { method: 'POST' })
 }

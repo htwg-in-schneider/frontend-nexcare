@@ -759,6 +759,24 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
   cursor: pointer; color: var(--color-primary); align-self: flex-start;
 }
 .add-uhr-btn:hover { background: var(--color-surface); }
+
+/* Validation */
+.input-error { border-color: #ef4444 !important; }
+.input-error:focus { outline-color: #ef4444 !important; }
+.field-error-msg { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; }
+.required-mark { color: #ef4444; margin-left: 0.15rem; }
+
+/* Buttons */
+.app-btn {
+  padding: 0.6rem 1.25rem; border-radius: 0.5rem; border: none;
+  font-size: 0.9rem; font-weight: 600; font-family: inherit;
+  cursor: pointer; transition: opacity 0.15s;
+}
+.app-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.app-btn-primary { background: var(--color-primary, #2563eb); color: #fff; }
+.app-btn-primary:hover:not(:disabled) { opacity: 0.88; }
+.app-btn-secondary { background: var(--color-surface, #f1f5f9); color: var(--color-text); }
+.app-btn-secondary:hover:not(:disabled) { background: var(--color-border); }
 </style>
 
 <style>

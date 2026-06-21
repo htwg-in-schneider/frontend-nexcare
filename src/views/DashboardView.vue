@@ -64,18 +64,6 @@ const adminCards = computed(() => {
       desc: 'Medikamentenkatalog pflegen und archivieren.',
       route: '/admin/medikamente',
     },
-    {
-      icon: 'bi-gear-fill',
-      title: 'Einstellungen',
-      desc: 'Admin-E-Mail und Systemkonfiguration verwalten.',
-      route: '/admin/einstellungen',
-    },
-    {
-      icon: 'bi-envelope-check',
-      title: 'E-Mail-Protokoll',
-      desc: 'Übersicht aller versendeten E-Mails und Status.',
-      route: '/admin/email-log',
-    },
   ]
 })
 </script>

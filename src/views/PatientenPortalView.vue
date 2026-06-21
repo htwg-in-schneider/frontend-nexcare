@@ -114,7 +114,7 @@ async function onAntragSenden() {
     })
     antragErfolg.value = true
   } catch (e) {
-    antragFehler.value = e.message === 'DUPLICATE'
+    antragFehler.value = e.message?.includes('409')
       ? 'Du hast bereits einen offenen Antrag.'
       : 'Fehler beim Senden. Bitte versuche es erneut.'
   } finally {

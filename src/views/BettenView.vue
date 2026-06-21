@@ -234,7 +234,7 @@ const freiePatienten = computed(() => {
   return allePatienten.value.filter(p => !belegtIds.has(p.id))
 })
 
-const freiePatienentenGefiltert = computed(() => {
+const freiePatientenGefiltert = computed(() => {
   const q = assignSuche.value.toLowerCase().trim()
   if (!q) return freiePatienten.value
   return freiePatienten.value.filter(p =>
@@ -483,9 +483,9 @@ const etagenDesc = computed(() => {
                 class="assign-search-input"
                 autocomplete="off"
               />
-              <ul v-if="freiePatienentenGefiltert.length" class="patient-suggest-list">
+              <ul v-if="freiePatientenGefiltert.length" class="patient-suggest-list">
                 <li
-                  v-for="p in freiePatienentenGefiltert.slice(0, 8)"
+                  v-for="p in freiePatientenGefiltert.slice(0, 8)"
                   :key="p.id"
                   class="patient-suggest-item"
                   @click="assignPatientId = p.id; assignSuche = ''"

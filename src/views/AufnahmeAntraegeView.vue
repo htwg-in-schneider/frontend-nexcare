@@ -7,12 +7,14 @@ import { fetchOffeneAntraege, bestaetigen, ablehnen } from '@/api/aufnahmeAntrag
 const ui = useUiStore()
 const antraege = ref([])
 const loading = ref(true)
+const fehler = ref(false)
 
 onMounted(load)
 
 async function load() {
   loading.value = true
-  try { antraege.value = await fetchOffeneAntraege() } catch { antraege.value = [] }
+  fehler.value = false
+  try { antraege.value = await fetchOffeneAntraege() } catch { fehler.value = true; antraege.value = [] }
   loading.value = false
 }
 
@@ -63,6 +65,7 @@ async function onAblehnen(antrag) {
 
   <main class="container">
     <p v-if="loading" class="state-msg">Lade …</p>
+    <p v-else-if="fehler" class="state-msg error"><i class="bi bi-exclamation-triangle"></i> Fehler beim Laden der Anträge.</p>
     <p v-else-if="!antraege.length" class="state-msg empty">
       <i class="bi bi-check2-circle"></i> Keine offenen Aufnahmeanträge.
     </p>
@@ -114,6 +117,7 @@ async function onAblehnen(antrag) {
 .container { padding: 1rem 1rem 6rem; max-width: 48rem; margin: 0 auto; }
 .state-msg { text-align: center; color: var(--color-muted); margin-top: 2rem; }
 .state-msg.empty { display: flex; align-items: center; justify-content: center; gap: .5rem; font-size: .95rem; }
+.state-msg.error { color: #b3372e; display: flex; align-items: center; justify-content: center; gap: .5rem; }
 
 .antrag-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: .875rem; }
 .antrag-card {

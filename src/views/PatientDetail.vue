@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth0 } from '@auth0/auth0-vue';
-import { fetchPatient, entlassenPatient } from '@/api/patients.js';
+import { fetchPatient, entlassenPatient, updatePatient } from '@/api/patients.js';
 import { useUiStore } from '@/stores/ui.js';
 import AppHeader from '@/components/AppHeader.vue';
 import Avatar from '@/components/Avatar.vue';
@@ -57,6 +57,23 @@ function editPatient() {
 
 function showMedikamentenplan() {
   router.push({ name: 'medikamentenplan', params: { patientId: props.id } });
+}
+
+async function readmitPatient() {
+  const ok = await ui.confirm({
+    title: 'Patient wieder aufnehmen',
+    message: `${patient.value.vorname} ${patient.value.nachname} wieder als stationär aufnehmen?`,
+    confirmLabel: 'Aufnehmen',
+    cancelLabel: 'Abbrechen',
+  });
+  if (!ok) return;
+  try {
+    const updated = await updatePatient(props.id, { ...patient.value, status: 'Stationär' });
+    patient.value = updated;
+    ui.showToast('Patient wurde wieder aufgenommen.');
+  } catch (err) {
+    ui.showToast(`Fehler: ${err.message ?? err}`, { variant: 'error' });
+  }
 }
 
 async function dischargePatient() {
@@ -128,6 +145,7 @@ async function dischargePatient() {
 
       <div class="action-buttons">
         <Button variant="primary" @click="showMedikamentenplan">Medikamentenplan</Button>
+        <Button v-if="isAuthenticated && patient.status === 'Entlassen'" variant="primary" @click="readmitPatient">Wieder aufnehmen</Button>
         <Button v-if="isAuthenticated && patient.status !== 'Entlassen'" variant="primary" @click="dischargePatient">Patient entlassen</Button>
       </div>
     </template>

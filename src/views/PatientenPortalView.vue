@@ -362,8 +362,8 @@ onMounted(load)
           </dl>
         </div>
 
-        <!-- ── Aufnahme beantragen (nur ohne aktive Aufnahme) ── -->
-        <div v-if="!patient" class="card">
+        <!-- ── Aufnahme beantragen (nur für entlassene oder nicht-stationäre Patienten) ── -->
+        <div v-if="patient?.status === 'ENTLASSEN' || patient?.status === 'AMBULANT'" class="card">
           <div class="card-head">
             <i class="bi bi-hospital-fill card-icon blue"></i>
             <h3>Krankenhausaufnahme beantragen</h3>

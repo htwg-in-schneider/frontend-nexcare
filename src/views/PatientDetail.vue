@@ -107,15 +107,17 @@ async function dischargePatient() {
         <div class="info-row"><dt>Adresse</dt><dd>{{ patient.adresse }}</dd></div>
       </dl>
 
-      <h3 class="section-title">Aktueller Aufenthalt</h3>
-      <dl class="info-card">
-        <div class="info-row"><dt>Krankenhaus</dt><dd>{{ patient.klinikum }}</dd></div>
-        <div class="info-row"><dt>Etage</dt><dd>{{ patient.etage }}</dd></div>
-        <div class="info-row"><dt>Abteilung</dt><dd>{{ patient.abteilung }}</dd></div>
-        <div class="info-row"><dt>Station</dt><dd>{{ patient.station }}</dd></div>
-        <div class="info-row"><dt>Zimmer</dt><dd>{{ patient.zimmer }}</dd></div>
-        <div class="info-row"><dt>Bett</dt><dd>{{ patient.bett }}</dd></div>
-      </dl>
+      <template v-if="patient.status !== 'Entlassen'">
+        <h3 class="section-title">Aktueller Aufenthalt</h3>
+        <dl class="info-card">
+          <div class="info-row" v-if="patient.klinikum"><dt>Krankenhaus</dt><dd>{{ patient.klinikum }}</dd></div>
+          <div class="info-row" v-if="patient.etage"><dt>Etage</dt><dd>{{ patient.etage }}</dd></div>
+          <div class="info-row" v-if="patient.abteilung"><dt>Abteilung</dt><dd>{{ patient.abteilung }}</dd></div>
+          <div class="info-row" v-if="patient.station"><dt>Station</dt><dd>{{ patient.station }}</dd></div>
+          <div class="info-row" v-if="patient.zimmer"><dt>Zimmer</dt><dd>{{ patient.zimmer }}</dd></div>
+          <div class="info-row" v-if="patient.bett"><dt>Bett</dt><dd>{{ patient.bett }}</dd></div>
+        </dl>
+      </template>
 
       <h3 class="section-title">Notfallkontakt</h3>
       <dl class="info-card">
@@ -126,7 +128,7 @@ async function dischargePatient() {
 
       <div class="action-buttons">
         <Button variant="primary" @click="showMedikamentenplan">Medikamentenplan</Button>
-        <Button v-if="isAuthenticated" variant="primary" @click="dischargePatient">Patient entlassen</Button>
+        <Button v-if="isAuthenticated && patient.status !== 'Entlassen'" variant="primary" @click="dischargePatient">Patient entlassen</Button>
       </div>
     </template>
 

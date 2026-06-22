@@ -110,36 +110,6 @@ onMounted(async () => {
             <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
           </select>
         </label>
-        <label>
-          <span>Etage</span>
-          <input type="text" title="Etage (optional, maximal 50 Zeichen)" placeholder="3. OG" maxlength="50"
-            :value="modelValue.etage"
-            @input="$emit('update:modelValue', { ...modelValue, etage: $event.target.value })" />
-        </label>
-        <label>
-          <span>Abteilung</span>
-          <input type="text" title="Abteilung (optional, maximal 100 Zeichen)" placeholder="Kardiologie" maxlength="100"
-            :value="modelValue.abteilung"
-            @input="$emit('update:modelValue', { ...modelValue, abteilung: $event.target.value })" />
-        </label>
-        <label>
-          <span>Station</span>
-          <input type="text" title="Station (optional, maximal 100 Zeichen)" placeholder="Station K3" maxlength="100"
-            :value="modelValue.station"
-            @input="$emit('update:modelValue', { ...modelValue, station: $event.target.value })" />
-        </label>
-        <label>
-          <span>Zimmer</span>
-          <input type="text" title="Zimmernummer (optional, maximal 20 Zeichen)" placeholder="304" maxlength="20"
-            :value="modelValue.zimmer"
-            @input="$emit('update:modelValue', { ...modelValue, zimmer: $event.target.value })" />
-        </label>
-        <label>
-          <span>Bett</span>
-          <input type="text" title="Bettbezeichnung (optional, maximal 20 Zeichen)" placeholder="Bett A" maxlength="20"
-            :value="modelValue.bett"
-            @input="$emit('update:modelValue', { ...modelValue, bett: $event.target.value })" />
-        </label>
       </div>
     </fieldset>
 

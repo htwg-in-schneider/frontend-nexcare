@@ -386,14 +386,6 @@ onMounted(load)
               </select>
             </label>
             <label>
-              <span>Gewünschte Abteilung</span>
-              <input v-model="antragForm.abteilung" type="text" title="Abteilung (optional, maximal 100 Zeichen)" placeholder="z.B. Kardiologie" maxlength="100" />
-            </label>
-            <label>
-              <span>Station</span>
-              <input v-model="antragForm.station" type="text" title="Station (optional, maximal 100 Zeichen)" placeholder="z.B. Station K3" maxlength="100" />
-            </label>
-            <label>
               <span>Nachricht ans Personal</span>
               <textarea v-model="antragForm.nachricht" title="Optionale Nachricht an das medizinische Personal (maximal 1000 Zeichen)" placeholder="Beschreibe kurz den Grund deines Aufenthalts …" rows="3" maxlength="1000"></textarea>
             </label>

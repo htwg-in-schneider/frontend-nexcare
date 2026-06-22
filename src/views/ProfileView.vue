@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue'
 import { useAuth0 } from '@auth0/auth0-vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { fetchProfile, updateProfile } from '@/api/profile.js'
+import { fetchPatient, updatePatient } from '@/api/patients.js'
 import { useUiStore } from '@/stores/ui.js'
 import { useUserStore } from '@/stores/user.js'
 
@@ -10,7 +11,8 @@ const { user: auth0User } = useAuth0()
 const ui = useUiStore()
 const userStore = useUserStore()
 
-const profile = ref({ name: '', email: '', adresse: '', role: '' })
+const profile = ref(null)
+const patientData = ref(null)
 const loading = ref(true)
 const saving = ref(false)
 const error = ref(null)
@@ -19,10 +21,12 @@ onMounted(async () => {
   try {
     const data = await fetchProfile()
     profile.value = { ...data }
+
+    if (userStore.isPatient && data.patientId) {
+      patientData.value = await fetchPatient(data.patientId)
+    }
   } catch {
-    // Fallback auf Auth0-Daten wenn Backend-Profil nicht gefunden
-    profile.value.name = auth0User.value?.name ?? ''
-    profile.value.email = auth0User.value?.email ?? ''
+    profile.value = { name: auth0User.value?.name ?? '', email: auth0User.value?.email ?? '' }
     error.value = 'Profil konnte nicht vom Server geladen werden.'
   } finally {
     loading.value = false
@@ -30,18 +34,24 @@ onMounted(async () => {
 })
 
 async function save() {
-  if (!profile.value.name?.trim()) {
-    ui.showToast('Name ist erforderlich.', { variant: 'error' })
-    return
-  }
   saving.value = true
   try {
-    const updated = await updateProfile({
-      name: profile.value.name.trim(),
-      adresse: profile.value.adresse,
-    })
-    profile.value = { ...updated }
-    ui.showToast('Profil gespeichert.', { variant: 'success' })
+    if (userStore.isPatient && patientData.value) {
+      await updatePatient(patientData.value.id, patientData.value)
+      ui.showToast('Profil gespeichert.', { variant: 'success' })
+    } else {
+      if (!profile.value.name?.trim()) {
+        ui.showToast('Name ist erforderlich.', { variant: 'error' })
+        saving.value = false
+        return
+      }
+      const updated = await updateProfile({
+        name: profile.value.name.trim(),
+        adresse: profile.value.adresse,
+      })
+      profile.value = { ...updated }
+      ui.showToast('Profil gespeichert.', { variant: 'success' })
+    }
   } catch {
     ui.showToast('Fehler beim Speichern.', { variant: 'error' })
   } finally {
@@ -59,7 +69,45 @@ async function save() {
     <template v-else>
       <p v-if="error" class="state-msg error">{{ error }}</p>
 
-      <form class="profile-form" @submit.prevent="save">
+      <!-- Patient: zeigt/bearbeitet Patient-Daten direkt -->
+      <form v-if="userStore.isPatient && patientData" class="profile-form" @submit.prevent="save">
+        <fieldset>
+          <legend>Meine Daten</legend>
+
+          <div class="row-2">
+            <label>
+              <span>Vorname</span>
+              <input v-model="patientData.vorname" type="text" required placeholder="Maria" maxlength="100" />
+            </label>
+            <label>
+              <span>Nachname</span>
+              <input v-model="patientData.nachname" type="text" required placeholder="Schmidt" maxlength="100" />
+            </label>
+          </div>
+
+          <label>
+            <span>E-Mail</span>
+            <input v-model="patientData.email" type="email" placeholder="maria@beispiel.de" maxlength="150" />
+          </label>
+
+          <label>
+            <span>Telefon</span>
+            <input v-model="patientData.telefon" type="tel" placeholder="+49 170 1234567" maxlength="20" />
+          </label>
+
+          <label>
+            <span>Adresse</span>
+            <input v-model="patientData.adresse" type="text" placeholder="Musterstr. 12, 78462 Konstanz" maxlength="250" />
+          </label>
+        </fieldset>
+
+        <button type="submit" class="app-btn app-btn-primary" :disabled="saving">
+          {{ saving ? 'Speichern …' : 'Speichern' }}
+        </button>
+      </form>
+
+      <!-- Staff/Admin: zeigt AppUser-Daten -->
+      <form v-else-if="profile" class="profile-form" @submit.prevent="save">
         <fieldset>
           <legend>Persönliche Daten</legend>
 
@@ -77,7 +125,6 @@ async function save() {
             <span>Adresse</span>
             <input v-model="profile.adresse" type="text" placeholder="Musterstraße 1, 78462 Konstanz" />
           </label>
-
 
           <label v-if="userStore.isAdmin">
             <span>Rolle</span>
@@ -117,6 +164,9 @@ legend { font-size: 1rem; font-weight: 700; color: var(--color-primary); padding
 
 label { display: flex; flex-direction: column; gap: 0.25rem; }
 label > span { font-size: 0.85rem; color: var(--color-muted); }
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+@media (max-width: 28rem) { .row-2 { grid-template-columns: 1fr; } }
 
 input {
   padding: 0.625rem 0.75rem;

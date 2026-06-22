@@ -97,9 +97,7 @@ const routes = [
   },
   {
     path: '/aufnahme/2',
-    name: 'aufnahme-2',
-    component: () => import('@/views/admission/AdmissionStep2.vue'),
-    beforeEnter: [authGuard, staffRoleGuard],
+    redirect: '/aufnahme/3',
   },
   {
     path: '/aufnahme/3',

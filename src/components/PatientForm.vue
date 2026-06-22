@@ -1,19 +1,10 @@
 <script setup>
-import { ref, onMounted } from 'vue';
-import { fetchKlinika } from '@/api/klinika.js';
-
 defineProps({
   modelValue: { type: Object, required: true },
   submitLabel: { type: String, default: 'Speichern' },
 });
 
 defineEmits(['update:modelValue', 'submit']);
-
-const klinika = ref([]);
-
-onMounted(async () => {
-  try { klinika.value = await fetchKlinika() } catch { klinika.value = [] }
-});
 </script>
 
 <template>
@@ -84,31 +75,6 @@ onMounted(async () => {
             maxlength="250"
             :value="modelValue.adresse"
             @input="$emit('update:modelValue', { ...modelValue, adresse: $event.target.value })" />
-        </label>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Aktueller Aufenthalt</legend>
-      <div class="grid">
-        <label>
-          <span>Status</span>
-          <select title="Aufnahmestatus des Patienten"
-            :value="modelValue.status"
-            @change="$emit('update:modelValue', { ...modelValue, status: $event.target.value })">
-            <option value="Stationär">Stationär</option>
-            <option value="Ambulant">Ambulant</option>
-            <option value="Entlassen">Entlassen</option>
-          </select>
-        </label>
-        <label>
-          <span>Klinikum</span>
-          <select title="Zugeordnetes Klinikum (optional)"
-            :value="modelValue.klinikumId ?? ''"
-            @change="$emit('update:modelValue', { ...modelValue, klinikumId: $event.target.value ? Number($event.target.value) : null })">
-            <option value="">– bitte wählen –</option>
-            <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
-          </select>
         </label>
       </div>
     </fieldset>

@@ -32,7 +32,7 @@ const adresse        = useField('adresse')
 
 const onSubmit = handleSubmit(values => {
   admission.updatePatient({ ...values })
-  router.push({ name: 'aufnahme-2' })
+  router.push({ name: 'aufnahme-3' })
 })
 </script>
 

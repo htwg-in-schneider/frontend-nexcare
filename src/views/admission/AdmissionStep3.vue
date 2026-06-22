@@ -20,7 +20,7 @@ const notfall = ref({ ...admission.patient.notfallkontakt })
 const saving = ref(false)
 
 function back() {
-  router.push({ name: 'aufnahme-2' })
+  router.push({ name: 'aufnahme-1' })
 }
 
 async function submit() {
@@ -43,7 +43,7 @@ const p = admission.patient
 
 <template>
   <AppHeader title="Patient aufnehmen" :show-back="false" />
-  <AdmissionStepper :current-step="3" />
+  <AdmissionStepper :current-step="2" />
 
   <main class="container">
     <h2 class="step-title">Notfallkontakt &amp; Bestätigung</h2>
@@ -75,10 +75,8 @@ const p = admission.patient
           <div class="row"><dt>Name</dt><dd>{{ p.vorname }} {{ p.nachname }}</dd></div>
           <div class="row"><dt>Geburtsdatum</dt><dd>{{ p.geburtsdatum }}</dd></div>
           <div class="row"><dt>Versicherungsnr.</dt><dd>{{ p.versicherungsnr }}</dd></div>
-          <div class="row"><dt>Status</dt><dd>{{ p.status }}</dd></div>
-          <div class="row"><dt>Klinikum-ID</dt><dd>{{ p.klinikumId ?? '–' }}</dd></div>
-          <div class="row"><dt>Etage / Abteilung</dt><dd>{{ p.etage || '–' }} / {{ p.abteilung || '–' }}</dd></div>
-          <div class="row"><dt>Station / Zimmer / Bett</dt><dd>{{ p.station || '–' }} / {{ p.zimmer || '–' }} / {{ p.bett || '–' }}</dd></div>
+          <div class="row" v-if="p.telefon"><dt>Telefon</dt><dd>{{ p.telefon }}</dd></div>
+          <div class="row" v-if="p.email"><dt>E-Mail</dt><dd>{{ p.email }}</dd></div>
         </dl>
       </section>
 

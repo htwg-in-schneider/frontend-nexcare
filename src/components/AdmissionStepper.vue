@@ -5,7 +5,6 @@ defineProps({
 
 const steps = [
   { label: 'Persönliche Daten' },
-  { label: 'Aufenthalt' },
   { label: 'Notfallkontakt' },
 ]
 </script>

@@ -17,12 +17,12 @@ Vue 3 + Vite + Pinia + Vue Router · Auth0 (OAuth2/JWT) · GitHub Pages
 |-------|--------|----------|--------------|
 | **Arzt** | arzt@nexcare.com | arzt2026! | Kann Patienten aufnehmen, entlassen, Medikamente verschreiben, Betten zuweisen |
 | **Pflegekraft** | pflege@nexcare.com | arzt2026! | Gleiche Rechte wie Arzt (außer Admin-Bereich) |
-| **Patient** | patient@nexcare.de | arzt2026! | Sieht eigenes Portal mit Medikamentenplan, Zimmerdaten, Nachrichten, Eigenanteil |
+| **Patient** | patient@nexcare.com | arzt2026! | Sieht eigenes Portal mit Medikamentenplan, Zimmerdaten, Nachrichten |
 | **Admin** | admin@nexcare.com | arzt2026! | Alle Rechte + Klinika-, Benutzer- und Medikamentenverwaltung |
 
 ### Patienten-Login testen
 
-Der Patienten-Account (`patient@nexcare.de`) ist mit der Demo-Patientin **Maria Schmidt** verknüpft. Nach dem Login landet man direkt im **Patientenportal**, das folgende Funktionen bietet:
+Der Patienten-Account (`patient@nexcare.com`) ist die Demo-Patientin **Maria Schmidt**. Nach dem Login landet man direkt im **Patientenportal**, das folgende Funktionen bietet:
 
 - Persönliche Daten und aktuelles Zimmer/Bett einsehen
 - Heutiger Medikamentenplan mit nächster Einnahme

@@ -2,8 +2,8 @@
 import { ref, onMounted } from 'vue'
 import { useAuth0 } from '@auth0/auth0-vue'
 import AppHeader from '@/components/AppHeader.vue'
-import { fetchProfile, updateProfile } from '@/api/profile.js'
-import { fetchPatient, updatePatient } from '@/api/patients.js'
+import { fetchProfile, updateProfile, updateMeinPatient } from '@/api/profile.js'
+import { fetchPatient } from '@/api/patients.js'
 import { useUiStore } from '@/stores/ui.js'
 import { useUserStore } from '@/stores/user.js'
 
@@ -37,7 +37,13 @@ async function save() {
   saving.value = true
   try {
     if (userStore.isPatient && patientData.value) {
-      await updatePatient(patientData.value.id, patientData.value)
+      await updateMeinPatient({
+        vorname: patientData.value.vorname,
+        nachname: patientData.value.nachname,
+        email: patientData.value.email,
+        telefon: patientData.value.telefon,
+        adresse: patientData.value.adresse,
+      })
       ui.showToast('Profil gespeichert.', { variant: 'success' })
     } else {
       if (!profile.value.name?.trim()) {

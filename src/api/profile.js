@@ -11,3 +11,7 @@ export async function fetchMeinPatient() {
 export async function updateProfile(data) {
   return apiFetch('/api/profile', { method: 'PUT', body: JSON.stringify(data) })
 }
+
+export async function updateMeinPatient(data) {
+  return apiFetch('/api/profile/mein-patient', { method: 'PUT', body: JSON.stringify(data) })
+}

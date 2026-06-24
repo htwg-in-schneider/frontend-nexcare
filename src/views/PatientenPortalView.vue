@@ -256,9 +256,13 @@ onMounted(load)
               <dt>Telefon</dt>
               <dd>{{ patient.telefon }}</dd>
             </div>
-            <div class="info-row" v-if="patient.adresse">
-              <dt>Adresse</dt>
-              <dd>{{ patient.adresse }}</dd>
+            <div class="info-row" v-if="patient.strasse">
+              <dt>Straße</dt>
+              <dd>{{ patient.strasse }}</dd>
+            </div>
+            <div class="info-row" v-if="patient.plz || patient.ort">
+              <dt>PLZ / Ort</dt>
+              <dd>{{ patient.plz }} {{ patient.ort }}</dd>
             </div>
           </dl>
         </div>

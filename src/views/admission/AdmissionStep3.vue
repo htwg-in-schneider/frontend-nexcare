@@ -77,6 +77,8 @@ const p = admission.patient
           <div class="row"><dt>Versicherungsnr.</dt><dd>{{ p.versicherungsnr }}</dd></div>
           <div class="row" v-if="p.telefon"><dt>Telefon</dt><dd>{{ p.telefon }}</dd></div>
           <div class="row" v-if="p.email"><dt>E-Mail</dt><dd>{{ p.email }}</dd></div>
+          <div class="row" v-if="p.strasse"><dt>Straße</dt><dd>{{ p.strasse }}</dd></div>
+          <div class="row" v-if="p.plz || p.ort"><dt>PLZ / Ort</dt><dd>{{ p.plz }} {{ p.ort }}</dd></div>
         </dl>
       </section>
 

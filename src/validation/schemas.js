@@ -2,6 +2,8 @@ import * as yup from 'yup'
 
 const TELEFON_REGEX = /^[+0-9\s() -]{1,20}$/
 const EMAIL_REGEX   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NAME_REGEX    = /^[\p{L} .'\-]+$/u
+const PLZ_REGEX     = /^\d{5}$/
 
 function isRealisticDate(v) {
   if (!v) return true
@@ -14,8 +16,10 @@ function isRealisticDate(v) {
 }
 
 export const patientStep1Schema = yup.object({
-  vorname:        yup.string().trim().required('Vorname ist erforderlich').max(100, 'Maximal 100 Zeichen'),
-  nachname:       yup.string().trim().required('Nachname ist erforderlich').max(100, 'Maximal 100 Zeichen'),
+  vorname:        yup.string().trim().required('Vorname ist erforderlich').max(100, 'Maximal 100 Zeichen')
+                     .matches(NAME_REGEX, 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte und Apostrophe'),
+  nachname:       yup.string().trim().required('Nachname ist erforderlich').max(100, 'Maximal 100 Zeichen')
+                     .matches(NAME_REGEX, 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte und Apostrophe'),
   geburtsdatum:   yup.string().required('Geburtsdatum ist erforderlich')
                      .test('realistic', 'Geburtsdatum muss zwischen 1900 und heute liegen', isRealisticDate),
   versicherungsnr: yup.string().trim().required('Versicherungsnummer ist erforderlich')
@@ -27,7 +31,11 @@ export const patientStep1Schema = yup.object({
                      .test('email-format', 'Ungültige E-Mail-Adresse',
                        v => !v || EMAIL_REGEX.test(v))
                      .max(150, 'Maximal 150 Zeichen'),
-  adresse:        yup.string().max(250, 'Maximal 250 Zeichen').nullable().default(''),
+  strasse:        yup.string().max(150, 'Maximal 150 Zeichen').nullable().default(''),
+  plz:            yup.string().nullable().default('')
+                     .test('plz-format', 'PLZ muss genau 5 Ziffern haben',
+                       v => !v || PLZ_REGEX.test(v)),
+  ort:            yup.string().max(100, 'Maximal 100 Zeichen').nullable().default(''),
 })
 
 export const notfallkontaktSchema = yup.object({

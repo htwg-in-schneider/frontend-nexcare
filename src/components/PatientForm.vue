@@ -9,8 +9,10 @@ const props = defineProps({
 const emit = defineEmits(['update:modelValue', 'submit']);
 
 const submitted = ref(false)
-const TELEFON_RE = /^[+0-9\s() -]{0,20}$/
+const TELEFON_RE = /^[+0-9\s() -]{1,20}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NAME_RE = /^[\p{L} .'\-]+$/u
+const PLZ_RE = /^\d{5}$/
 
 function update(field, value) {
   emit('update:modelValue', { ...props.modelValue, [field]: value })
@@ -27,9 +29,11 @@ const errors = computed(() => {
   const v = props.modelValue
   if (!v.vorname?.trim()) e.vorname = 'Vorname ist erforderlich'
   else if (v.vorname.length > 100) e.vorname = 'Maximal 100 Zeichen'
+  else if (!NAME_RE.test(v.vorname)) e.vorname = 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte'
 
   if (!v.nachname?.trim()) e.nachname = 'Nachname ist erforderlich'
   else if (v.nachname.length > 100) e.nachname = 'Maximal 100 Zeichen'
+  else if (!NAME_RE.test(v.nachname)) e.nachname = 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte'
 
   if (v.geburtsdatum) {
     const d = new Date(v.geburtsdatum)
@@ -47,11 +51,18 @@ const errors = computed(() => {
   if (v.email && !EMAIL_RE.test(v.email))
     e.email = 'Ungültige E-Mail-Adresse'
 
-  if (v.adresse && v.adresse.length > 250)
-    e.adresse = 'Maximal 250 Zeichen'
+  if (v.strasse && v.strasse.length > 150)
+    e.strasse = 'Maximal 150 Zeichen'
+
+  if (v.plz && !PLZ_RE.test(v.plz))
+    e.plz = 'PLZ muss genau 5 Ziffern haben'
+
+  if (v.ort && v.ort.length > 100)
+    e.ort = 'Maximal 100 Zeichen'
 
   const nk = v.notfallkontakt
   if (nk?.name && nk.name.length > 100) e.nkName = 'Maximal 100 Zeichen'
+  else if (nk?.name && !NAME_RE.test(nk.name)) e.nkName = 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte'
   if (nk?.beziehung && nk.beziehung.length > 100) e.nkBeziehung = 'Maximal 100 Zeichen'
   if (nk?.telefon && !TELEFON_RE.test(nk.telefon))
     e.nkTelefon = 'Nur Ziffern, +, Leerzeichen, Klammern, Bindestrich'
@@ -124,12 +135,28 @@ function onSubmit() {
           <span v-if="err('email')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('email') }}</span>
         </label>
         <label class="wide">
-          <span>Adresse</span>
-          <input type="text" placeholder="Musterstr. 12, 78462 Konstanz" maxlength="250"
-            :class="{ 'err': err('adresse') }"
-            :value="modelValue.adresse"
-            @input="update('adresse', $event.target.value)" />
-          <span v-if="err('adresse')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('adresse') }}</span>
+          <span>Straße</span>
+          <input type="text" placeholder="Musterstr. 12" maxlength="150"
+            :class="{ 'err': err('strasse') }"
+            :value="modelValue.strasse"
+            @input="update('strasse', $event.target.value)" />
+          <span v-if="err('strasse')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('strasse') }}</span>
+        </label>
+        <label>
+          <span>PLZ</span>
+          <input type="text" placeholder="78462" maxlength="5"
+            :class="{ 'err': err('plz') }"
+            :value="modelValue.plz"
+            @input="update('plz', $event.target.value)" />
+          <span v-if="err('plz')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('plz') }}</span>
+        </label>
+        <label>
+          <span>Ort</span>
+          <input type="text" placeholder="Konstanz" maxlength="100"
+            :class="{ 'err': err('ort') }"
+            :value="modelValue.ort"
+            @input="update('ort', $event.target.value)" />
+          <span v-if="err('ort')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('ort') }}</span>
         </label>
       </div>
     </fieldset>

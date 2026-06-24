@@ -18,7 +18,9 @@ const { handleSubmit, meta } = useForm({
     versicherungsnr:admission.patient.versicherungsnr?? '',
     telefon:        admission.patient.telefon        ?? '',
     email:          admission.patient.email          ?? '',
-    adresse:        admission.patient.adresse        ?? '',
+    strasse:        admission.patient.strasse        ?? '',
+    plz:            admission.patient.plz            ?? '',
+    ort:            admission.patient.ort            ?? '',
   },
 })
 
@@ -28,7 +30,9 @@ const geburtsdatum   = useField('geburtsdatum')
 const versicherungsnr= useField('versicherungsnr')
 const telefon        = useField('telefon')
 const email          = useField('email')
-const adresse        = useField('adresse')
+const strasse        = useField('strasse')
+const plz            = useField('plz')
+const ort            = useField('ort')
 
 const onSubmit = handleSubmit(values => {
   admission.updatePatient({ ...values })
@@ -141,18 +145,50 @@ const onSubmit = handleSubmit(values => {
           </label>
 
           <label class="wide">
-            <span>Adresse</span>
+            <span>Straße</span>
             <input
-              v-model="adresse.value.value"
+              v-model="strasse.value.value"
               type="text"
-              title="Wohnanschrift (optional, maximal 250 Zeichen)"
-              placeholder="Musterstr. 12, 78462 Konstanz"
-              maxlength="250"
+              title="Straße und Hausnummer (optional, maximal 150 Zeichen)"
+              placeholder="Musterstr. 12"
+              maxlength="150"
               autocomplete="street-address"
-              :class="{ 'input-error': adresse.errorMessage.value }"
+              :class="{ 'input-error': strasse.errorMessage.value }"
             />
-            <span v-if="adresse.errorMessage.value" class="field-error-msg">
-              <i class="bi bi-exclamation-circle"></i> {{ adresse.errorMessage.value }}
+            <span v-if="strasse.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ strasse.errorMessage.value }}
+            </span>
+          </label>
+
+          <label>
+            <span>PLZ</span>
+            <input
+              v-model="plz.value.value"
+              type="text"
+              title="Postleitzahl (optional, genau 5 Ziffern)"
+              placeholder="78462"
+              maxlength="5"
+              autocomplete="postal-code"
+              :class="{ 'input-error': plz.errorMessage.value }"
+            />
+            <span v-if="plz.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ plz.errorMessage.value }}
+            </span>
+          </label>
+
+          <label>
+            <span>Ort</span>
+            <input
+              v-model="ort.value.value"
+              type="text"
+              title="Ort (optional, maximal 100 Zeichen)"
+              placeholder="Konstanz"
+              maxlength="100"
+              autocomplete="address-level2"
+              :class="{ 'input-error': ort.errorMessage.value }"
+            />
+            <span v-if="ort.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ ort.errorMessage.value }}
             </span>
           </label>
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useAuth0 } from '@auth0/auth0-vue'
 import AppHeader from '@/components/AppHeader.vue'
 import { fetchProfile, updateProfile, updateMeinPatient } from '@/api/profile.js'
@@ -16,6 +16,32 @@ const patientData = ref(null)
 const loading = ref(true)
 const saving = ref(false)
 const error = ref(null)
+const submitted = ref(false)
+
+const TELEFON_RE = /^[+0-9\s() -]{1,20}$/
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const NAME_RE = /^[\p{L} .'\-]+$/u
+const PLZ_RE = /^\d{5}$/
+
+const patientErrors = computed(() => {
+  const e = {}
+  const v = patientData.value
+  if (!v) return e
+  if (!v.vorname?.trim()) e.vorname = 'Vorname ist erforderlich'
+  else if (v.vorname.length > 100) e.vorname = 'Maximal 100 Zeichen'
+  else if (!NAME_RE.test(v.vorname)) e.vorname = 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte'
+  if (!v.nachname?.trim()) e.nachname = 'Nachname ist erforderlich'
+  else if (v.nachname.length > 100) e.nachname = 'Maximal 100 Zeichen'
+  else if (!NAME_RE.test(v.nachname)) e.nachname = 'Nur Buchstaben, Leerzeichen, Bindestriche, Punkte'
+  if (v.email && !EMAIL_RE.test(v.email)) e.email = 'Ungültige E-Mail-Adresse'
+  if (v.telefon && !TELEFON_RE.test(v.telefon)) e.telefon = 'Nur Ziffern, +, Leerzeichen, Klammern, Bindestrich'
+  if (v.strasse && v.strasse.length > 150) e.strasse = 'Maximal 150 Zeichen'
+  if (v.plz && !PLZ_RE.test(v.plz)) e.plz = 'PLZ muss genau 5 Ziffern haben'
+  if (v.ort && v.ort.length > 100) e.ort = 'Maximal 100 Zeichen'
+  return e
+})
+
+function perr(field) { return submitted.value ? patientErrors.value[field] : null }
 
 onMounted(async () => {
   try {
@@ -34,6 +60,10 @@ onMounted(async () => {
 })
 
 async function save() {
+  submitted.value = true
+  if (userStore.isPatient && patientData.value && Object.keys(patientErrors.value).length > 0) {
+    return
+  }
   saving.value = true
   try {
     if (userStore.isPatient && patientData.value) {
@@ -42,7 +72,9 @@ async function save() {
         nachname: patientData.value.nachname,
         email: patientData.value.email,
         telefon: patientData.value.telefon,
-        adresse: patientData.value.adresse,
+        strasse: patientData.value.strasse,
+        plz: patientData.value.plz,
+        ort: patientData.value.ort,
       })
       ui.showToast('Profil gespeichert.', { variant: 'success' })
     } else {
@@ -82,29 +114,47 @@ async function save() {
 
           <div class="row-2">
             <label>
-              <span>Vorname</span>
-              <input v-model="patientData.vorname" type="text" required placeholder="Maria" maxlength="100" />
+              <span>Vorname<span class="req">*</span></span>
+              <input v-model="patientData.vorname" type="text" required placeholder="Maria" maxlength="100" :class="{ 'input-error': perr('vorname') }" />
+              <span v-if="perr('vorname')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('vorname') }}</span>
             </label>
             <label>
-              <span>Nachname</span>
-              <input v-model="patientData.nachname" type="text" required placeholder="Schmidt" maxlength="100" />
+              <span>Nachname<span class="req">*</span></span>
+              <input v-model="patientData.nachname" type="text" required placeholder="Schmidt" maxlength="100" :class="{ 'input-error': perr('nachname') }" />
+              <span v-if="perr('nachname')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('nachname') }}</span>
             </label>
           </div>
 
           <label>
             <span>E-Mail</span>
-            <input v-model="patientData.email" type="email" placeholder="maria@beispiel.de" maxlength="150" />
+            <input v-model="patientData.email" type="email" placeholder="maria@beispiel.de" maxlength="150" :class="{ 'input-error': perr('email') }" />
+            <span v-if="perr('email')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('email') }}</span>
           </label>
 
           <label>
             <span>Telefon</span>
-            <input v-model="patientData.telefon" type="tel" placeholder="+49 170 1234567" maxlength="20" />
+            <input v-model="patientData.telefon" type="tel" placeholder="+49 170 1234567" maxlength="20" :class="{ 'input-error': perr('telefon') }" />
+            <span v-if="perr('telefon')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('telefon') }}</span>
           </label>
 
           <label>
-            <span>Adresse</span>
-            <input v-model="patientData.adresse" type="text" placeholder="Musterstr. 12, 78462 Konstanz" maxlength="250" />
+            <span>Straße</span>
+            <input v-model="patientData.strasse" type="text" placeholder="Musterstr. 12" maxlength="150" :class="{ 'input-error': perr('strasse') }" />
+            <span v-if="perr('strasse')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('strasse') }}</span>
           </label>
+
+          <div class="row-2">
+            <label>
+              <span>PLZ</span>
+              <input v-model="patientData.plz" type="text" placeholder="78462" maxlength="5" :class="{ 'input-error': perr('plz') }" />
+              <span v-if="perr('plz')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('plz') }}</span>
+            </label>
+            <label>
+              <span>Ort</span>
+              <input v-model="patientData.ort" type="text" placeholder="Konstanz" maxlength="100" :class="{ 'input-error': perr('ort') }" />
+              <span v-if="perr('ort')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ perr('ort') }}</span>
+            </label>
+          </div>
         </fieldset>
 
         <button type="submit" class="app-btn app-btn-primary" :disabled="saving">
@@ -185,6 +235,9 @@ input {
 }
 input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
 input:disabled { background: var(--color-surface); color: var(--color-muted); cursor: not-allowed; }
+input.input-error { border-color: #ef4444 !important; }
+.err-msg { font-size: 0.78rem; color: #ef4444; display: flex; align-items: center; gap: 0.25rem; }
+.req { color: #ef4444; margin-left: 0.15rem; }
 
 .app-btn {
   width: 100%;

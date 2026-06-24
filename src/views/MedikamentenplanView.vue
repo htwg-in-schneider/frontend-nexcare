@@ -645,7 +645,15 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 
 /* ── Woche ── */
 .cal-week { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 0.0625rem solid var(--color-border); min-height: 14rem; overflow-x: auto; }
-@media (max-width: 36rem) { .cal-week { grid-template-columns: repeat(7, minmax(4rem, 1fr)); } }
+@media (max-width: 36rem) {
+  .cal-week { grid-template-columns: 1fr; }
+  .week-col { border-right: none; border-bottom: 0.0625rem solid var(--color-border); }
+  .week-col:last-child { border-bottom: none; }
+  .week-col-head { display: flex; align-items: center; gap: 0.5rem; padding: 0.4rem 0.75rem; }
+  .week-dayname { font-size: 0.82rem; }
+  .week-daynum { font-size: 0.88rem; }
+  .week-events { flex-direction: row; flex-wrap: wrap; padding: 0.25rem 0.75rem 0.5rem; }
+}
 .week-col {
   border-right: 0.0625rem solid var(--color-border);
   cursor: pointer; transition: background 0.15s;

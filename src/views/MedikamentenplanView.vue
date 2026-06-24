@@ -644,7 +644,8 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .ev-range i { margin-right: 0.2rem; }
 
 /* ── Woche ── */
-.cal-week { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 0.0625rem solid var(--color-border); min-height: 14rem; }
+.cal-week { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 0.0625rem solid var(--color-border); min-height: 14rem; overflow-x: auto; }
+@media (max-width: 36rem) { .cal-week { grid-template-columns: repeat(7, minmax(4rem, 1fr)); } }
 .week-col {
   border-right: 0.0625rem solid var(--color-border);
   cursor: pointer; transition: background 0.15s;
@@ -667,6 +668,13 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 }
 .we-time { font-size: 0.65rem; color: #fff; opacity: 0.9; }
 .we-name { font-size: 0.7rem; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+@media (max-width: 36rem) {
+  .week-dayname { font-size: 0.6rem; }
+  .week-daynum { font-size: 0.75rem; }
+  .we-time { font-size: 0.55rem; }
+  .we-name { font-size: 0.6rem; }
+  .week-events { padding: 0.15rem; }
+}
 
 /* ── Monat ── */
 .cal-month { border-top: 0.0625rem solid var(--color-border); }

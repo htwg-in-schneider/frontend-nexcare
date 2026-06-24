@@ -799,9 +799,10 @@ const patientName = computed(() => patient.value ? `${patient.value.vorname} ${p
 .rx-schema-on .rx-schema-label, .rx-schema-on .rx-schema-time { color: #fff; }
 
 /* Dates */
-.rx-date-row { display: flex; align-items: flex-end; gap: 0.75rem; }
-.rx-date-col { flex: 1; }
+.rx-date-row { display: flex; align-items: flex-end; gap: 0.75rem; flex-wrap: wrap; }
+.rx-date-col { flex: 1; min-width: 7rem; }
 .rx-date-sep { color: var(--color-muted); margin-bottom: 0.5rem; }
+@media (max-width: 28rem) { .rx-date-row { flex-direction: column; align-items: stretch; } .rx-date-sep { display: none; } }
 .rx-date-input {
   width: 100%; padding: 0.55rem 0.625rem;
   border: 0.0625rem solid var(--color-border); border-radius: 0.5rem;

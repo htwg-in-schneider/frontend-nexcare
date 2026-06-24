@@ -232,60 +232,6 @@ onMounted(load)
   </main>
 </template>
 
-<style scoped>
-.mp-main { padding: 0 0 6rem; max-width: 56rem; margin: 0 auto; }
-.state-msg { text-align: center; color: var(--color-muted); margin-top: 2rem; }
-.cal-toolbar { display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center; justify-content: space-between; padding: 0.75rem 1rem; background: var(--color-card); border-bottom: 0.0625rem solid var(--color-border); position: sticky; top: 0; z-index: 10; }
-.view-switcher { display: flex; background: var(--color-surface); border-radius: 0.5rem; overflow: hidden; border: 0.0625rem solid var(--color-border); }
-.view-btn { padding: 0.35rem 0.75rem; border: none; background: none; font-size: 0.82rem; font-family: inherit; cursor: pointer; color: var(--color-muted); }
-.view-btn.active { background: var(--color-primary); color: #fff; font-weight: 600; }
-.nav-row { display: flex; align-items: center; gap: 0.5rem; }
-.nav-btn { width: 2rem; height: 2rem; border-radius: 0.375rem; border: 0.0625rem solid var(--color-border); background: var(--color-surface); cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.nav-label { font-size: 0.88rem; font-weight: 600; color: var(--color-text); white-space: nowrap; }
-.today-btn { padding: 0.35rem 0.75rem; border-radius: 0.375rem; border: 0.0625rem solid var(--color-border); background: var(--color-surface); font-size: 0.82rem; cursor: pointer; font-family: inherit; }
-.cal-day { padding: 1rem; display: flex; flex-direction: column; gap: 0.625rem; }
-.no-events { text-align: center; padding: 3rem 1rem; color: var(--color-muted); }
-.no-events i { font-size: 2.5rem; display: block; margin-bottom: 0.5rem; }
-.day-event { border-left: 0.25rem solid; border-radius: 0.625rem; padding: 0.75rem 1rem; background: var(--color-card); }
-.ev-time { font-size: 0.82rem; font-weight: 700; margin-bottom: 0.2rem; }
-.ev-name { font-size: 0.95rem; font-weight: 600; color: var(--color-text); }
-.ev-dos { font-size: 0.82rem; color: var(--color-muted); margin-top: 0.1rem; }
-.ev-range { font-size: 0.78rem; color: var(--color-muted); margin-top: 0.35rem; }
-.ev-range i { margin-right: 0.2rem; }
-.cal-week { display: grid; grid-template-columns: repeat(7, 1fr); border-top: 0.0625rem solid var(--color-border); min-height: 14rem; }
-.week-col { border-right: 0.0625rem solid var(--color-border); cursor: pointer; display: flex; flex-direction: column; }
-.week-col:last-child { border-right: none; }
-.week-col:hover { background: var(--color-surface); }
-.week-col.is-today .week-col-head { background: var(--color-primary); color: #fff; }
-.week-col-head { text-align: center; padding: 0.4rem 0.2rem; border-bottom: 0.0625rem solid var(--color-border); }
-.week-dayname { display: block; font-size: 0.7rem; color: var(--color-muted); }
-.week-col.is-today .week-dayname { color: rgba(255,255,255,0.8); }
-.week-daynum { display: block; font-size: 0.88rem; font-weight: 700; }
-.week-events { padding: 0.25rem; display: flex; flex-direction: column; gap: 0.15rem; }
-.no-ev-dot { text-align: center; color: var(--color-border); font-size: 0.8rem; margin-top: 0.5rem; }
-.week-event { border-radius: 0.25rem; padding: 0.15rem 0.3rem; display: flex; flex-direction: column; overflow: hidden; }
-.we-time { font-size: 0.65rem; color: #fff; opacity: 0.9; }
-.we-name { font-size: 0.7rem; color: #fff; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.cal-month { border-top: 0.0625rem solid var(--color-border); }
-.month-header { display: grid; grid-template-columns: repeat(7, 1fr); background: var(--color-surface); }
-.month-dayname { text-align: center; font-size: 0.72rem; font-weight: 600; color: var(--color-muted); padding: 0.4rem 0; }
-.month-grid { display: grid; grid-template-columns: repeat(7, 1fr); }
-.month-cell { border-right: 0.0625rem solid var(--color-border); border-bottom: 0.0625rem solid var(--color-border); min-height: 4rem; padding: 0.3rem; cursor: pointer; }
-.month-cell:nth-child(7n) { border-right: none; }
-.month-cell:hover { background: var(--color-surface); }
-.month-cell.out-month { opacity: 0.35; cursor: default; }
-.month-cell.is-today .month-num { background: var(--color-primary); color: #fff; border-radius: 50%; width: 1.4rem; height: 1.4rem; display: flex; align-items: center; justify-content: center; }
-.month-num { font-size: 0.8rem; font-weight: 600; }
-.month-dots { display: flex; flex-wrap: wrap; gap: 0.15rem; margin-top: 0.2rem; }
-.month-dot { width: 0.45rem; height: 0.45rem; border-radius: 50%; }
-.month-more { font-size: 0.65rem; color: var(--color-muted); }
-.legend { padding: 1rem; border-top: 0.0625rem solid var(--color-border); }
-.legend-title { font-size: 0.82rem; font-weight: 700; color: var(--color-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.75rem; }
-.legend-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 0.5rem; }
-.legend-item { display: flex; align-items: flex-start; gap: 0.625rem; padding: 0.625rem 0.75rem; background: var(--color-card); border-radius: 0.625rem; border: 0.0625rem solid var(--color-border); }
-.legend-dot { width: 0.625rem; height: 0.625rem; border-radius: 50%; flex-shrink: 0; margin-top: 0.35rem; }
-.legend-info { flex: 1; display: flex; flex-direction: column; gap: 0.1rem; }
-.legend-name { font-size: 0.9rem; font-weight: 600; }
-.legend-detail { font-size: 0.78rem; color: var(--color-muted); }
-.legend-range { font-size: 0.75rem; color: var(--color-muted); }
+<style>
+@import '@/assets/medplan-calendar.css';
 </style>

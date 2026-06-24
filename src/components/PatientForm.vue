@@ -135,13 +135,25 @@ function onSubmit() {
             @input="update('email', $event.target.value)" />
           <span v-if="err('email')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('email') }}</span>
         </label>
-        <label class="wide">
+        <label>
           <span>Straße</span>
-          <input type="text" placeholder="Musterstr. 12" maxlength="150"
+          <input type="text" placeholder="Musterstr." maxlength="150"
             :class="{ 'err': err('strasse') }"
             :value="modelValue.strasse"
             @input="update('strasse', $event.target.value)" />
           <span v-if="err('strasse')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('strasse') }}</span>
+        </label>
+        <label>
+          <span>Hausnr.</span>
+          <input type="text" placeholder="12" maxlength="10"
+            :value="modelValue.hausnummer"
+            @input="update('hausnummer', $event.target.value)" />
+        </label>
+        <label class="wide">
+          <span>Adresszusatz</span>
+          <input type="text" placeholder="Hinterhaus, 2. OG" maxlength="100"
+            :value="modelValue.adresszusatz"
+            @input="update('adresszusatz', $event.target.value)" />
         </label>
         <label>
           <span>PLZ</span>
@@ -158,6 +170,12 @@ function onSubmit() {
             :value="modelValue.ort"
             @input="update('ort', $event.target.value)" />
           <span v-if="err('ort')" class="err-msg"><i class="bi bi-exclamation-circle"></i> {{ err('ort') }}</span>
+        </label>
+        <label>
+          <span>Land</span>
+          <input type="text" placeholder="Deutschland" maxlength="50"
+            :value="modelValue.land"
+            @input="update('land', $event.target.value)" />
         </label>
       </div>
     </fieldset>

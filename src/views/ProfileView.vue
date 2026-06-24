@@ -73,8 +73,11 @@ async function save() {
         email: patientData.value.email,
         telefon: patientData.value.telefon,
         strasse: patientData.value.strasse,
+        hausnummer: patientData.value.hausnummer,
+        adresszusatz: patientData.value.adresszusatz,
         plz: patientData.value.plz,
         ort: patientData.value.ort,
+        land: patientData.value.land,
       })
       ui.showToast('Profil gespeichert.', { variant: 'success' })
     } else {

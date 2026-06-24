@@ -8,15 +8,11 @@ const emptyPatient = () => ({
   telefon: '',
   email: '',
   strasse: '',
+  hausnummer: '',
+  adresszusatz: '',
   plz: '',
   ort: '',
-  status: 'Stationär',
-  klinikumId: null,
-  etage: '',
-  abteilung: '',
-  station: '',
-  zimmer: '',
-  bett: '',
+  land: 'Deutschland',
   notfallkontakt: { name: '', beziehung: '', telefon: '' },
 })
 

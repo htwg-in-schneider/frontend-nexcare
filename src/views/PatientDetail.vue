@@ -121,8 +121,10 @@ async function dischargePatient() {
         <div class="info-row"><dt>Versicherungsnr.</dt><dd>{{ patient.versicherungsnr }}</dd></div>
         <div class="info-row"><dt>Telefon</dt><dd><a :href="`tel:${patient.telefon}`">{{ patient.telefon }}</a></dd></div>
         <div class="info-row"><dt>E-Mail</dt><dd><a :href="`mailto:${patient.email}`">{{ patient.email }}</a></dd></div>
-        <div class="info-row" v-if="patient.strasse"><dt>Straße</dt><dd>{{ patient.strasse }}</dd></div>
+        <div class="info-row" v-if="patient.strasse || patient.hausnummer"><dt>Straße</dt><dd>{{ patient.strasse }} {{ patient.hausnummer }}</dd></div>
+        <div class="info-row" v-if="patient.adresszusatz"><dt>Adresszusatz</dt><dd>{{ patient.adresszusatz }}</dd></div>
         <div class="info-row" v-if="patient.plz || patient.ort"><dt>PLZ / Ort</dt><dd>{{ patient.plz }} {{ patient.ort }}</dd></div>
+        <div class="info-row" v-if="patient.land"><dt>Land</dt><dd>{{ patient.land }}</dd></div>
       </dl>
 
       <template v-if="patient.status !== 'Entlassen'">

@@ -197,8 +197,8 @@ onMounted(load)
 
       <!-- ── Status-Banner ── -->
       <div v-if="patient" class="status-banner" :class="patient.status?.toLowerCase()">
-        <i class="bi" :class="patient.status === 'STATIONAER' ? 'bi-hospital-fill' : patient.status === 'ENTLASSEN' ? 'bi-house-check-fill' : 'bi-clock-history'"></i>
-        <span>{{ patient.status === 'STATIONAER' ? 'Stationär aufgenommen' : patient.status === 'ENTLASSEN' ? 'Entlassen' : patient.status ?? 'Unbekannt' }}</span>
+        <i class="bi" :class="patient.status === 'Stationär' ? 'bi-hospital-fill' : patient.status === 'Entlassen' ? 'bi-house-check-fill' : 'bi-clock-history'"></i>
+        <span>{{ patient.status === 'Stationär' ? 'Stationär aufgenommen' : patient.status === 'Entlassen' ? 'Entlassen' : patient.status ?? 'Unbekannt' }}</span>
       </div>
 
       <!-- ── Nachrichten ── -->
@@ -256,13 +256,21 @@ onMounted(load)
               <dt>Telefon</dt>
               <dd>{{ patient.telefon }}</dd>
             </div>
-            <div class="info-row" v-if="patient.strasse">
+            <div class="info-row" v-if="patient.strasse || patient.hausnummer">
               <dt>Straße</dt>
-              <dd>{{ patient.strasse }}</dd>
+              <dd>{{ patient.strasse }} {{ patient.hausnummer }}</dd>
+            </div>
+            <div class="info-row" v-if="patient.adresszusatz">
+              <dt>Adresszusatz</dt>
+              <dd>{{ patient.adresszusatz }}</dd>
             </div>
             <div class="info-row" v-if="patient.plz || patient.ort">
               <dt>PLZ / Ort</dt>
               <dd>{{ patient.plz }} {{ patient.ort }}</dd>
+            </div>
+            <div class="info-row" v-if="patient.land">
+              <dt>Land</dt>
+              <dd>{{ patient.land }}</dd>
             </div>
           </dl>
         </div>
@@ -367,7 +375,7 @@ onMounted(load)
         </div>
 
         <!-- ── Aufnahme beantragen (alle Patienten die nicht stationär sind) ── -->
-        <div v-if="patient?.status !== 'STATIONAER'" class="card">
+        <div v-if="patient?.status !== 'Stationär'" class="card">
           <div class="card-head">
             <i class="bi bi-hospital-fill card-icon blue"></i>
             <h3>Krankenhausaufnahme beantragen</h3>

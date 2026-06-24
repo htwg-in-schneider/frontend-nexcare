@@ -1,13 +1,20 @@
 <script setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useForm, useField } from 'vee-validate'
 import AppHeader from '@/components/AppHeader.vue'
 import AdmissionStepper from '@/components/AdmissionStepper.vue'
 import { useAdmissionStore } from '@/stores/admission.js'
 import { patientStep1Schema } from '@/validation/schemas.js'
+import { fetchKlinika } from '@/api/klinika.js'
 
 const router = useRouter()
 const admission = useAdmissionStore()
+const klinika = ref([])
+
+onMounted(async () => {
+  try { klinika.value = await fetchKlinika() } catch { klinika.value = [] }
+})
 
 const { handleSubmit, meta } = useForm({
   validationSchema: patientStep1Schema,
@@ -21,6 +28,8 @@ const { handleSubmit, meta } = useForm({
     strasse:        admission.patient.strasse        ?? '',
     plz:            admission.patient.plz            ?? '',
     ort:            admission.patient.ort            ?? '',
+    status:         admission.patient.status         ?? 'Stationär',
+    klinikumId:     admission.patient.klinikumId     ?? '',
   },
 })
 
@@ -33,6 +42,8 @@ const email          = useField('email')
 const strasse        = useField('strasse')
 const plz            = useField('plz')
 const ort            = useField('ort')
+const status         = useField('status')
+const klinikumId     = useField('klinikumId')
 
 const onSubmit = handleSubmit(values => {
   admission.updatePatient({ ...values })
@@ -192,6 +203,32 @@ const onSubmit = handleSubmit(values => {
             </span>
           </label>
 
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Aufnahme</legend>
+        <div class="grid">
+          <label>
+            <span>Status<span class="required-mark">*</span></span>
+            <select v-model="status.value.value" :class="{ 'input-error': status.errorMessage.value }">
+              <option value="Stationär">Stationär</option>
+              <option value="Ambulant">Ambulant</option>
+            </select>
+            <span v-if="status.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ status.errorMessage.value }}
+            </span>
+          </label>
+          <label>
+            <span>Klinikum<span class="required-mark">*</span></span>
+            <select v-model="klinikumId.value.value" :class="{ 'input-error': klinikumId.errorMessage.value }">
+              <option value="">– bitte wählen –</option>
+              <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
+            </select>
+            <span v-if="klinikumId.errorMessage.value" class="field-error-msg">
+              <i class="bi bi-exclamation-circle"></i> {{ klinikumId.errorMessage.value }}
+            </span>
+          </label>
         </div>
       </fieldset>
 

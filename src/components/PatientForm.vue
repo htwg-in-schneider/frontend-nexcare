@@ -1,5 +1,6 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { fetchKlinika } from '@/api/klinika.js'
 
 const props = defineProps({
   modelValue: { type: Object, required: true },
@@ -7,6 +8,11 @@ const props = defineProps({
 });
 
 const emit = defineEmits(['update:modelValue', 'submit']);
+
+const klinika = ref([])
+onMounted(async () => {
+  try { klinika.value = await fetchKlinika() } catch { klinika.value = [] }
+})
 
 const submitted = ref(false)
 const TELEFON_RE = /^[+0-9\s() -]{1,20}$/
@@ -176,6 +182,27 @@ function onSubmit() {
           <input type="text" placeholder="Deutschland" maxlength="50"
             :value="modelValue.land"
             @input="update('land', $event.target.value)" />
+        </label>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Aufnahme</legend>
+      <div class="grid">
+        <label>
+          <span>Status</span>
+          <select :value="modelValue.status" @change="update('status', $event.target.value)">
+            <option value="Stationär">Stationär</option>
+            <option value="Ambulant">Ambulant</option>
+            <option value="Entlassen">Entlassen</option>
+          </select>
+        </label>
+        <label>
+          <span>Klinikum</span>
+          <select :value="modelValue.klinikumId ?? ''" @change="update('klinikumId', $event.target.value ? Number($event.target.value) : null)">
+            <option value="">– bitte wählen –</option>
+            <option v-for="k in klinika" :key="k.id" :value="k.id">{{ k.name }}</option>
+          </select>
         </label>
       </div>
     </fieldset>

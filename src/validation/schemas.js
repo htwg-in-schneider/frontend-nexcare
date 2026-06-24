@@ -37,6 +37,8 @@ export const patientStep1Schema = yup.object({
                      .test('plz-format', 'PLZ muss genau 5 Ziffern haben',
                        v => !v || PLZ_REGEX.test(v)),
   ort:            yup.string().max(100, 'Maximal 100 Zeichen').nullable().default(''),
+  status:         yup.string().required('Status ist erforderlich'),
+  klinikumId:     yup.mixed().required('Klinikum ist erforderlich').test('not-empty', 'Klinikum ist erforderlich', v => v !== '' && v != null),
 })
 
 export const notfallkontaktSchema = yup.object({

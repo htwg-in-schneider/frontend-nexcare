@@ -4,6 +4,7 @@ const TELEFON_REGEX = /^[+0-9\s() -]{1,20}$/
 const EMAIL_REGEX   = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const NAME_REGEX    = /^[\p{L} .'\-]+$/u
 const PLZ_REGEX     = /^\d{5}$/
+const VNUMMER_REGEX = /^V-\d{4}-\d{3,6}$/
 
 function isRealisticDate(v) {
   if (!v) return true
@@ -23,7 +24,7 @@ export const patientStep1Schema = yup.object({
   geburtsdatum:   yup.string().required('Geburtsdatum ist erforderlich')
                      .test('realistic', 'Geburtsdatum muss zwischen 1900 und heute liegen', isRealisticDate),
   versicherungsnr: yup.string().trim().required('Versicherungsnummer ist erforderlich')
-                      .min(5, 'Mindestens 5 Zeichen').max(30, 'Maximal 30 Zeichen'),
+                      .matches(VNUMMER_REGEX, 'Format: V-JJJJ-NNN (z.B. V-2024-001)'),
   telefon:        yup.string().nullable().default('')
                      .test('telefon-format', 'Nur Ziffern, +, Leerzeichen, Klammern, Bindestrich',
                        v => !v || TELEFON_REGEX.test(v)),

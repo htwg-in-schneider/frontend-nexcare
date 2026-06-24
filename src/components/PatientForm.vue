@@ -13,6 +13,7 @@ const TELEFON_RE = /^[+0-9\s() -]{1,20}$/
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const NAME_RE = /^[\p{L} .'\-]+$/u
 const PLZ_RE = /^\d{5}$/
+const VNUMMER_RE = /^V-\d{4}-\d{3,6}$/
 
 function update(field, value) {
   emit('update:modelValue', { ...props.modelValue, [field]: value })
@@ -42,8 +43,8 @@ const errors = computed(() => {
     else if (d.getFullYear() < 1900) e.geburtsdatum = 'Muss nach 1900 liegen'
   }
 
-  if (v.versicherungsnr && (v.versicherungsnr.length < 5 || v.versicherungsnr.length > 30))
-    e.versicherungsnr = 'Zwischen 5 und 30 Zeichen'
+  if (!v.versicherungsnr?.trim()) e.versicherungsnr = 'Versicherungsnummer ist erforderlich'
+  else if (!VNUMMER_RE.test(v.versicherungsnr)) e.versicherungsnr = 'Format: V-JJJJ-NNN (z.B. V-2024-001)'
 
   if (v.telefon && !TELEFON_RE.test(v.telefon))
     e.telefon = 'Nur Ziffern, +, Leerzeichen, Klammern, Bindestrich'

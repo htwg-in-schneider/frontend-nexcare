@@ -248,13 +248,14 @@ fieldset { border: 0; background: var(--color-card); border-radius: var(--radius
 .wide { grid-column: 1 / -1; }
 label { display: flex; flex-direction: column; gap: 0.25rem; }
 label > span { font-size: 0.85rem; color: var(--color-muted); font-weight: 500; }
-input {
+input, select {
   padding: 0.625rem 0.75rem;
   border: 0.0625rem solid var(--color-border);
   border-radius: 0.625rem;
   font-size: 0.95rem; color: var(--color-text); font-family: inherit; background: #fff;
+  width: 100%;
 }
-input:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
+input:focus, select:focus { outline: 0.125rem solid var(--color-primary); outline-offset: -0.0625rem; }
 .app-btn { width: 100%; padding: 0.875rem 1.25rem; border: 0; border-radius: var(--radius-card); font-size: 1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem; }
 .app-btn-primary { background: var(--color-primary); color: #fff; }
 .app-btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
